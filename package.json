@@ -1,0 +1,29 @@
+{
+  "name": "ucamp",
+  "version": "1.0.0",
+  "description": "An  online course platform for use in the campuslands network, developed and powered by the camper community (students and employees).",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "nodemon": "^3.0.1",
+    "standard": "17.1.0",
+    "typescript": "^5.2.2"
+  },
+  "dependencies": {
+    "bcrypt": "5.1.1",
+    "dotenv": "16.3.1",
+    "express": "4.18.2",
+    "express-rate-limit": "7.0.1",
+    "express-routes-versioning": "^1.0.1",
+    "express-validator": "^7.0.1",
+    "jsonwebtoken": "9.0.2",
+    "mongodb": "6.1.0",
+    "passport": "0.6.0",
+    "passport-http-bearer": "1.0.1"
+  }
+}
