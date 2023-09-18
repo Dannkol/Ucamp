@@ -52,78 +52,16 @@
 
         }
     ],
-    learning: [
-        {
-            _id: "sdfsdfse23423sdaas",
-            classes : [
-                {
-                    _id : "asdasf012q3423gwes21"
-                    title : "React Native for dummies",
-                    summary: "lorem",
-                    content: [
-                        "url_video",
-                        "text",
-                        "taks",
-                        "md code"
-                    ],
-                    update_date: "2023-09-02"
-                },
-                {
-                    _id : "asdasf012qdsf3gwes21"
-                    title : "React for dummies",
-                    summary: "lorem",
-                    content: [
-                        "url_video",
-                        "text",
-                        "taks",
-                        "md code"
-                    ],
-                    update_date: "2023-09-04"
-                }
-            ],
-            title : "React",
-            summary : "React",
-            content : "Lorem",
-            update_date: "2023-09-04",
-            status : 1
-        }
-    ]
-}
-```
-
-* course_default
-
-```json
-[
-    
-    {
-        _id: "sdfsdfse23423sdaas",
-        classes : [
+    "learning": {
+        "default": [],
+        "courses": [
             {
-                _id : "asdasf012q3423gwes21"
-                title : "React Native for dummies",
-                summary: "lorem",
-                content: "url_video",
-                update_date: "2023-09-02",
-                author : "Gorge"
-            },
-            {
-                _id : "asdasf012qdsf3gwes21"
-                title : "React for dummies",
-                summary: "lorem",
-                content: "url_video",
-                update_date: "2023-09-04",
-                author : "Gorge"
+                "_id": "6508c6565d4e802963392f19",
+                "status": 1
             }
-        ],
-        title : "React",
-        summary : "React",
-        content : "Lorem",
-        update_date: "2023-09-04",
-        author : "Gorge"
-    }
-    
-]
+        ]
+    },
+}
 ```
 
 * rewards
