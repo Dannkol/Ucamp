@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "An  online course platform for use in the campuslands network, developed and powered by the camper community (students and employees).",
   "main": "app.js",
+  "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
