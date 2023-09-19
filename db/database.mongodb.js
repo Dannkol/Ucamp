@@ -181,3 +181,7 @@ db.getCollection('rewards').insertOne(
         "stock" : 22
     }
 )
+
+use("uCamp_db")
+
+db.createCollection("_Env")
