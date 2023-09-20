@@ -2,6 +2,8 @@
 // The current database to use.
 use('uCamp_db');
 
+db.getCollection('users').findOne({})
+
 // Create a new user
 db.getCollection('users').insertOne(
     {
