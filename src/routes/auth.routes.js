@@ -18,7 +18,6 @@ let scopes = ['identify', 'email', 'guilds', 'guilds.join'];
 
 const SERVER = JSON.parse(process.env.SERVER)
 
-console.log(`http://${SERVER.HOSTNAME}:${SERVER.PORT}/auth/discord/callback`);
 
 passport.use(new DiscordStrategy({
     clientID: process.env.CLIENTIDDISCORD,
@@ -44,9 +43,12 @@ passport.use(new DiscordStrategy({
     }
 
     const user = await findUser(profile) 
+    
+    if (!user)  await NewUser(profile)
+    
+    return done(null, profile);
 
 
-    return (!user) ? await NewUser(profile) : done(null, profile);
 }));
 
 

@@ -9,9 +9,6 @@ export default function Dashboard() {
 
     const serverBackend = JSON.parse(import.meta.env.VITE_SERVERBACKEND)
 
-    console.log(serverBackend);
-    console.log(`http://${serverBackend.HOSTNAME}:${serverBackend.PORT}/dashboard`);
-
     useEffect(() => {
         // Realizamos la solicitud Axios dentro de useEffect
         axios.get(`http://${serverBackend.HOSTNAME}:${serverBackend.PORT}/dashboard`, { withCredentials: true })

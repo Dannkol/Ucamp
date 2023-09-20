@@ -18,7 +18,7 @@ function Copyright(props) {
   return (
     <Typography variant="body2" color="text.secondary" align="center" {...props}>
       {'Copyright © '}
-      <Link color="inherit" href="https://mui.com/">
+      <Link color="inherit" href="https://dannkol.github.io/portafolios/">
         Your Website
       </Link>{' '}
       {new Date().getFullYear()}
@@ -31,12 +31,14 @@ function Copyright(props) {
 
 const defaultTheme = createTheme();
 
+const serverBackend = JSON.parse(import.meta.env.VITE_SERVERBACKEND)
+
 export default function SignInSide() {
   const navigate = useNavigate();
   const handleSubmit = async (event) => {
     event.preventDefault();
     const popup = window.open(
-      "http://localhost:5101/auth/discord",
+      `http://${serverBackend.HOSTNAME}:${serverBackend.PORT}/auth/discord`,
       "targetWindow",
       `toolbar=no,
       location=no,
@@ -99,7 +101,7 @@ export default function SignInSide() {
               alignItems: 'center',
             }}
           >
-            <Avatar sx={{ m: 1, width: 100, height: 100 }} src="https://cdn-icons-png.flaticon.com/512/3670/3670157.png">
+            <Avatar sx={{ m: 1, width: 150, height: 150 }} src="https://cdn-icons-png.flaticon.com/512/3670/3670157.png">
             </Avatar>
             <Typography component="h1" variant="h5">
               Sign in
