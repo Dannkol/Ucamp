@@ -6,6 +6,7 @@ import './index.css'
 import Layout from './components/navbar/Layout';
 
 import Dashboard from './components/inicio/dashboard';
+import UploadCourses from './components/upload/classes/uploadCourses';
 
 ReactDOM.createRoot(document.getElementById('root')).render(
 <React.StrictMode>
@@ -14,7 +15,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
         <Routes>
           <Route index element={<Dashboard />} />
           <Route path="/login" element={<SignInSide />} /> {/* RUTA POR DEFAULT */}
-          <Route path="/formulario/:id" element={<h1>hdhd</h1>} /> {/* RUTA CON PARAMETROS */}
+          <Route path="/formulario" element={<UploadCourses />} /> {/* RUTA CON PARAMETROS */}
           <Route path="*" element={<h1>404</h1>} /> {/* RUTA PARA ERRORES */}
         </Routes>
       </Layout>
