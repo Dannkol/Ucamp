@@ -66,7 +66,7 @@ Router_Auth.get('/auth/discord/callback',
 );
 
 Router_Auth.get('/logout', (req, res) => {
-    req.logout; // Passport.js proporciona el método logout() para cerrar la sesión del usuario
+    req.logout;
     req.session.destroy();
     res.status(403).json({message : true});
 });

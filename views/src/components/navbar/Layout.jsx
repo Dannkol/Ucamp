@@ -37,14 +37,14 @@ export default function Layout({ children }) {
     return (
         <>
             {!isLoginPage ? <Box sx={{ flexGrow: 1 }}>
-                <AppBar position="relative" enableColorOnDark style={{ backgroundColor: '#E55604' }} >
+                <AppBar position="relative" enableColorOnDark style={{ backgroundColor: '#040D12' }} >
                     <Toolbar>
                         <IconButton
                             size="large"
                             edge="start"
                             color="inherit"
                             aria-label="menu"
-                            sx={{ mr: 2 }}
+                            
                         >
                         </IconButton>
 
@@ -64,16 +64,16 @@ export default function Layout({ children }) {
                                     }}
                                 >
                                     <Link to="/" style={{ textDecoration: 'none' }} underline="none" >
-                                        <Typography style={{ color: "black" }} component="h6" >Inicio</Typography>
+                                        <Typography style={{ color: "white" }} component="h6" >Inicio</Typography>
                                     </Link>
                                     <Link to="/about" style={{ textDecoration: 'none' }} underline="none"  >
-                                        <Typography style={{ color: "black" }} component="h6" >about</Typography>
+                                        <Typography style={{ color: "white" }} component="h6" >about</Typography>
                                     </Link>
                                 </Box>
                             )}
                         </Typography>
                         <Button onClick={handleFetch}>
-                            <Typography style={{ color: "black" }} component="h6" >LogOut</Typography>
+                            <Typography style={{ color: "white" }} component="h6" >LogOut</Typography>
                         </Button>
                     </Toolbar>
                 </AppBar>

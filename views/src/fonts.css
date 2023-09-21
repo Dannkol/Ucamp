@@ -1,0 +1,8 @@
+/* Importa la fuente de Google (Mukta y PT Serif) */
+@import url('https://fonts.googleapis.com/css2?family=Mukta:wght@300&family=PT+Serif&display=swap');
+
+.titleClassUpload {
+    font-family: 'Mukta', sans-serif, 'PT Serif', serif !important;
+    padding: 5px; /* Aplica ambas fuentes */
+    font-size: 40px; /* Tamaño de fuente */
+}
