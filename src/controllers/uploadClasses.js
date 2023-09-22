@@ -26,7 +26,7 @@ const uploadclass = async (req, res) => {
             if (e.mimetype === 'video/mp4') return `..${req.path}/${e.filename}`;
           });
           break;
-
+          null
         case 'readme':
           pathReadme = req.files.readme.map(e => {
             if (e.mimetype === 'text/markdown') return `..${req.path}/${e.filename}`;
@@ -50,27 +50,24 @@ const uploadclass = async (req, res) => {
       update_date: new Date(),
     };
 
-    console.log(data);
-
-    const result = null
+    const result = await createNewCourse(data)
 
     if (!result) {
-      for(let item in req.files){
+      for (let item in req.files) {
         req.files[item].forEach((value) => {
           linksToDelete.push(value.path);
         })
       }
       await deletAny(linksToDelete);
-      throw new Error('Error al crear el curso');
+      return res.status(500).json({
+        message: "Error al crear un nuevo curso"
+      })
     }
-
     res.status(200).send('Archivo subido correctamente.');
   } catch (error) {
-    res.status(500).json({ error: 'error en la creacion del curso' });
-    console.error('Error:', error);
+    res.status(500).json({ message: 'error en la creacion del curso' });
   } finally {
     res.end();
-    
   }
 };
 

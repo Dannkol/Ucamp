@@ -309,7 +309,7 @@ const FileUpload = ({ typeUpdload }) => {
             typeUpdload ? (
               <Grid item xs={12}>
                 <Paper style={stylesText.paper} elevation={3} >
-                  <FormControl sx={{ m: 1, width: 300 }}>
+                  <FormControl sx={{ m: 1, width: '100%' }}>
                     <InputLabel id="demo-multiple-chip-label">Clases</InputLabel>
                     <Select
                       labelId="demo-multiple-chip-label"
@@ -400,7 +400,7 @@ const FileUpload = ({ typeUpdload }) => {
             <Grid item xs={12}>
               <Paper style={stylesText.paper} elevation={3} >
                 <TextField
-                  label="Link del goole sheet *"
+                  label="Link del google sheet *"
                   variant="outlined"
                   fullWidth
                   value={sheet}
