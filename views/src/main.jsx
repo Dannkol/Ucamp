@@ -10,12 +10,13 @@ import UploadCourses from './components/upload/classes/uploadCourses';
 
 ReactDOM.createRoot(document.getElementById('root')).render(
 <React.StrictMode>
-    <BrowserRouter basename={import.meta.env.VITE_URL_PRIVATE}> {/* CREAR RUTAS CON UN PATH DEFINCIDO EN ESTE CASO LO SACA DE UN ENV */}
+    <BrowserRouter> {/* CREAR RUTAS CON UN PATH DEFINCIDO EN ESTE CASO LO SACA DE UN ENV basename={import.meta.env.VITE_URL_PRIVATE} */}
       <Layout>
         <Routes>
           <Route index element={<Dashboard />} />
           <Route path="/login" element={<SignInSide />} /> {/* RUTA POR DEFAULT */}
-          <Route path="/formulario" element={<UploadCourses />} /> {/* RUTA CON PARAMETROS */}
+          <Route path="/formulario/clases" element={<UploadCourses typeUpdload={false} />} /> {/* RUTA PARA LA CREACION DE CLASES */}
+          <Route path="/formulario/cursos" element={<UploadCourses typeUpdload={true}/>} /> {/* RUTA PARA LA CREACION DE CURSOS */}
           <Route path="*" element={<h1>404</h1>} /> {/* RUTA PARA ERRORES */}
         </Routes>
       </Layout>

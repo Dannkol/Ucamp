@@ -1,5 +1,81 @@
 
 // The current database to use.
+
+use('uCamp_db');
+
+const pipeline = [
+    {
+        $project: {
+            _id: 0, // Excluye el campo _id
+            id: { $arrayElemAt: ['$courses._id', 0] }, // Obtiene el primer elemento del array 'id' (si existe)
+            curso: { $arrayElemAt: ['$courses.title', 0] } // Obtiene el primer elemento del array 'curso' (si existe)
+        }
+    },
+    {
+        $match: {
+            $or: [
+                { id: { $exists: true, $ne: null } }, // Filtra documentos con 'id' no nulo
+                { curso: { $exists: true, $ne: null } } // Filtra documentos con 'curso' no nulo
+            ]
+        }
+    }
+];
+
+db.getCollection('users').aggregate(pipeline);
+
+use('uCamp_db');
+
+const pipelineclass = [
+    {
+        $unwind: "$courses"
+    },
+    {
+        $unwind: "$courses.classes"
+    },
+    {
+        $group: {
+            _id: { id: "$courses.classes._id", clase: "$courses.classes.title" },
+        }
+    },
+    {
+        $project: {
+            _id: 0,
+            id: "$_id.id",
+            clase: "$_id.clase"
+        }
+    }
+];
+
+db.getCollection('users').aggregate(pipelineclass);
+
+use('uCamp_db');
+
+db.getCollection('users').aggregate([
+    {
+        $unwind: "$courses"
+    },
+    {
+        $unwind: "$courses.classes"
+    },
+    {
+        $match: {
+            "courses.classes._id": {
+                $in : [
+                    ObjectId("6508c6575d4e802963392f1a"),
+                    ObjectId("6508c6575d4e802963392f1b")
+                ]
+            }
+        }
+    },
+    {
+        $project: {
+            _id : 0,
+            "classes": "$courses.classes"
+        }
+    }
+]);
+
+
 use('uCamp_db');
 
 db.getCollection('users').findOne({})
@@ -14,8 +90,8 @@ db.getCollection('users').insertOne(
         "rol": 1,
         "courses": [],
         "learning": {
-            "default" : [],
-            "courses" : []
+            "default": [],
+            "courses": []
         }
     }
 );
@@ -85,23 +161,23 @@ use('uCamp_db');
 
 let idCourse = db.getCollection("users").findOne(
     {
-        "courses.title" : "React"
+        "courses.title": "React"
     },
     {
-        "_id" : 0,
-        "_id" : "$courses._id"
+        "_id": 0,
+        "_id": "$courses._id"
     }
 )._id[0].toString()
 
 use('uCamp_db');
 
 db.getCollection("users").updateOne(
-    { _id: ObjectId("6508c6565d4e802963392f18" )},
+    { _id: ObjectId("6508c6565d4e802963392f18") },
     {
         $addToSet: {
             "learning.courses": {
-                "_id" : ObjectId(idCourse),
-                "status" : 1
+                "_id": ObjectId(idCourse),
+                "status": 1
             }
         }
     }
@@ -112,18 +188,18 @@ db.getCollection("users").updateOne(
 use('uCamp_db');
 
 let idCourselist = db.getCollection("users").findOne(
-    { _id: ObjectId("6508c6565d4e802963392f18" )},
+    { _id: ObjectId("6508c6565d4e802963392f18") },
     {
-        "_id" : "$learning.courses"
+        "_id": "$learning.courses"
     }
 )._id.map(id => id._id.toString())
 
 db.getCollection("users").findOne(
     {
-        "courses._id" : { $in: idCourselist.map(id => new ObjectId(id)) }
+        "courses._id": { $in: idCourselist.map(id => new ObjectId(id)) }
     },
     {
-        "_id" : 0,
-        "mylist" : "$courses"
+        "_id": 0,
+        "mylist": "$courses"
     }
 )

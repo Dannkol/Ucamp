@@ -12,10 +12,8 @@ let client = null
 const mongoConn = async () => {
   try {
     const options = {
-      wtimeout: 2500,
-      connectTimeoutMS: 10000,
-      useNewUrlParser: true,
-      useUnifiedTopology: true
+      wtimeoutMS: 2500,
+      connectTimeoutMS: 10000
     }
 
     client = await MongoClient.connect(uri, options)
