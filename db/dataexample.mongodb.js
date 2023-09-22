@@ -61,7 +61,6 @@ db.getCollection('users').aggregate([
         $match: {
             "courses.classes._id": {
                 $in : [
-                    ObjectId("6508c6575d4e802963392f1a"),
                     ObjectId("6508c6575d4e802963392f1b")
                 ]
             }
@@ -71,6 +70,12 @@ db.getCollection('users').aggregate([
         $project: {
             _id : 0,
             "classes": "$courses.classes"
+        }
+    },
+    {
+        $group: {
+            _id: "$classes._id",
+            classes: { $first: "$classes" }
         }
     }
 ]);

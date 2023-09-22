@@ -194,7 +194,7 @@ const FileUpload = ({ typeUpdload }) => {
 
   const handleUpload = async () => {
     const formData = new FormData();
-    const linksquiz = [];
+    let linksquiz = [];
 
     if (typeUpdload) {
       formData.append('resumen', text);
@@ -217,6 +217,7 @@ const FileUpload = ({ typeUpdload }) => {
         return alert('Por favor, verifique que sea un enlace de Google Sheets');
       }
       formData.append('quiz', JSON.stringify(linksquiz));
+      
     } else {
       formData.append('file', file);
       formData.append('resumen', text);

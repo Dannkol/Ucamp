@@ -52,7 +52,7 @@ const uploadclass = async (req, res) => {
 
     console.log(data);
 
-    const result = await createNewCourse(data);
+    const result = null
 
     if (!result) {
       for(let item in req.files){

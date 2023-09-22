@@ -102,6 +102,12 @@ const getAllClasesByIds = async (data) => {
                     _id: 0,
                     "classes": "$courses.classes"
                 }
+            },
+            {
+                $group: {
+                    _id: "$classes._id",
+                    classes: { $first: "$classes" }
+                }
             }
         ]
 
