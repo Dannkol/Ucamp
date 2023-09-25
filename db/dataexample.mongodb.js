@@ -1,27 +1,6 @@
 
 // The current database to use.
 
-use('uCamp_db');
-
-const pipeline = [
-    {
-        $project: {
-            _id: 0, // Excluye el campo _id
-            id: { $arrayElemAt: ['$courses._id', 0] }, // Obtiene el primer elemento del array 'id' (si existe)
-            curso: { $arrayElemAt: ['$courses.title', 0] } // Obtiene el primer elemento del array 'curso' (si existe)
-        }
-    },
-    {
-        $match: {
-            $or: [
-                { id: { $exists: true, $ne: null } }, // Filtra documentos con 'id' no nulo
-                { curso: { $exists: true, $ne: null } } // Filtra documentos con 'curso' no nulo
-            ]
-        }
-    }
-];
-
-db.getCollection('users').aggregate(pipeline);
 
 use('uCamp_db');
 

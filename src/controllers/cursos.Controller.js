@@ -1,4 +1,4 @@
-import { getCoursesName, getClasesName } from "../models/Curso.Model.js";
+import { getCoursesName, getClasesName , getAllClasesByIds} from "../models/Curso.Model.js";
 
 const getCoursesNameId = async (req, res) => {
     try {
@@ -24,4 +24,22 @@ const getClasesNameId = async (req, res) => {
 }
 
 
-export { getCoursesNameId , getClasesNameId }
+const getClasescontent = async (req, res) => {
+    try {
+      
+      const classes = await getAllClasesByIds(req.body.clases);
+  
+      res.status(200).json(classes);
+      
+    } catch (error) {
+      res.status(500).json({
+        message: 'error al obtener las clases'
+      })
+    } finally {
+      res.end();
+    }
+  }
+  
+
+
+export { getCoursesNameId , getClasesNameId ,getClasescontent }

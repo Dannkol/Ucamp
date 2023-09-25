@@ -5,9 +5,9 @@ import { fileURLToPath } from 'url';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
-import { uploadclass } from '../../controllers/uploadClasses.js';
+import { uploadclass} from '../../controllers/uploadClasses.js';
 
-import { getCoursesNameId , getClasesNameId} from '../../controllers/cursos.Controller.js';
+import { getCoursesNameId , getClasesNameId, getClasescontent} from '../../controllers/cursos.Controller.js';
 
 const uploads = Router();
 
@@ -36,6 +36,8 @@ uploads.post('/upload', upload.fields([
 uploads.get('/all/courses', getCoursesNameId)
 
 uploads.get('/all/clases', getClasesNameId)
+
+uploads.post('/all/content/clases', getClasescontent )
 
 
 export { uploads }

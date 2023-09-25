@@ -7,7 +7,8 @@ import { getAllClasesByIds, createNewCourse } from '../models/Curso.Model.js';
 
 let linksToDelete = [];
 
-const uploadclass = async (req, res) => {
+
+const CreatPath = async (req) => {
   try {
     let pathVideo = '';
     let pathReadme = '';
@@ -18,7 +19,6 @@ const uploadclass = async (req, res) => {
       return res.status(200).send('Archivo subido correctamente.');
     }
 
-
     Object.keys(req.files).forEach(key => {
       switch (key) {
         case 'file':
@@ -26,7 +26,6 @@ const uploadclass = async (req, res) => {
             if (e.mimetype === 'video/mp4') return `..${req.path}/${e.filename}`;
           });
           break;
-          null
         case 'readme':
           pathReadme = req.files.readme.map(e => {
             if (e.mimetype === 'text/markdown') return `..${req.path}/${e.filename}`;
@@ -38,40 +37,94 @@ const uploadclass = async (req, res) => {
       }
     });
 
-    const classes = await getAllClasesByIds(JSON.parse(req.body.clases));
+    return {
+      pathVideo: pathVideo,
+      pathReadme: pathReadme
+    }
+  } catch (error) {
+    return null
+  }
+}
 
-    const data = {
-      _id: new ObjectId(),
-      classes: classes.map((e) => e.classes),
-      title: req.body.title,
-      summary: req.body.resumen,
-      quiz: JSON.parse(req.body.quiz),
-      content: pathReadme[0],
-      update_date: new Date(),
-    };
+const uploadclass = async (req, res) => {
+  if (req.body.tipo === 'true' ? true : false) {
+    try {
 
-    const result = await createNewCourse(data)
+      const path = await CreatPath(req)
+      const classes = await getAllClasesByIds(JSON.parse(req.body.clases));
 
-    if (!result) {
+      const data = {
+        _id: new ObjectId(),
+        classes: classes.map((e) => e.classes),
+        title: req.body.title,
+        summary: req.body.resumen,
+        quiz: JSON.parse(req.body.quiz),
+        content: path.pathReadme[0],
+        update_date: 'sadasdas',
+      };
+
+      await createNewCourse(data)
+
+      res.status(200).send('Archivo subido correctamente.');
+    } catch (error) {
+
       for (let item in req.files) {
         req.files[item].forEach((value) => {
           linksToDelete.push(value.path);
-        })
+        });
       }
-      await deletAny(linksToDelete);
-      return res.status(500).json({
-        message: "Error al crear un nuevo curso"
-      })
+
+      let filesDeleted = await deletAny(linksToDelete);
+
+      linksToDelete = [];
+
+      if (filesDeleted < linksToDelete.length) {
+        return res.status(500).json({
+          message: 'No se pudieron eliminar todos los archivos',
+        });
+      } 
+      res.status(500).json({ message: 'error en la creaciSSon del curso' });
+    } finally {
+      res.end();
     }
-    res.status(200).send('Archivo subido correctamente.');
-  } catch (error) {
-    res.status(500).json({ message: 'error en la creacion del curso' });
-  } finally {
-    res.end();
+  } else {
+    try {
+
+      const path = await CreatPath(req)
+
+      const data = {
+        _id: new ObjectId(),
+        curso: req.body.curso,
+        title: req.body.title,
+        summary: req.body.resumen,
+        content: [path.pathVideo[0], path.pathReadme[0]],
+        update_date: new Date(),
+      };
+
+      await createNewCourse(data)
+
+      res.status(200).send('Archivo subido correctamente.');
+    } catch (error) {
+      for (let item in req.files) {
+        req.files[item].forEach((value) => {
+          linksToDelete.push(value.path);
+        });
+      }
+
+      let filesDeleted = await deletAny(linksToDelete);
+      req.files = [];
+      linksToDelete = []
+      if (filesDeleted < linksToDelete.length) {
+        return res.status(500).json({
+          message: 'No se pudieron eliminar todos los archivos',
+        });
+      } 
+      res.status(500).json({ message: 'error en la cssreacion del curso' });
+    } finally {
+      res.end();
+    }
   }
+
 };
-
-
-
 
 export { uploadclass };

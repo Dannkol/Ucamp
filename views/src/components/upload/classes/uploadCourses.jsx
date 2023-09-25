@@ -13,14 +13,20 @@ import {
   Paper,
   Box,
   OutlinedInput,
-  Chip
+  Chip,
+  useMediaQuery
 } from '@mui/material';
+import CssBaseline from '@mui/material/CssBaseline';
+
+import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 
 import { useTheme } from '@mui/material/styles';
 
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 
 import { Footer } from '../../footer/footer';
+
+import { PreviewCourse } from '../../preview/previewCourse'
 
 import '../../../fonts.css';
 
@@ -63,24 +69,13 @@ const hoveredButton = {
   }
 }
 
-const backgroundPattern = {
-  backgroundColor: '#F5FCCD',
-  opacity: '0.8',
-  backgroundImage: `url(${Waves})`, // Utiliza el componente SVG importado
-  backgroundRepeat: 'no-repeat',
-  backgroundSize: 'cover',
-  backgroundPosition: 'center',
-  height: '100vh'
-}
 
 const stylesText = {
   paper: {
-    padding: '16px', // Utiliza el mismo espaciado que theme.spacing(2) si lo deseas
     textAlign: 'center',
-    color: 'black', // Cambia el color de texto según tu preferencia
-    background: '#f5f5f5', // Cambia el color de fondo según tu preferencia
-    borderRadius: '8px', // Añade bordes redondeados si lo deseas
-    boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)', // Añade una sombra suave
+    color: 'black',
+    borderRadius: '8px',
+    boxShadow: '0 2px 0px rgba(0, 0, 0, 1)',
   },
   text: {
     fontSize: '24px', // Cambia el tamaño de fuente según tu preferencia
@@ -90,25 +85,31 @@ const stylesText = {
 
 const FileUpload = ({ typeUpdload }) => {
   const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const [clase, setClase] = useState([]);
   const [readme, setReadme] = useState(null);
   const [file, setFile] = useState(null);
-  const [text, setText] = useState('');
-  const [title, setTitle] = useState('');
-  const [curso, setCurso] = useState('');
-  const [quiz, setQuiz] = useState('');
-  const [sheet, setSheet] = useState('');
+  const [text, setText] = useState(null);
+  const [title, setTitle] = useState(null);
+  const [curso, setCurso] = useState([]);
+  const [quiz, setQuiz] = useState(null);
+  const [sheet, setSheet] = useState(null);
   const [optionscursos, setOptionsCursos] = useState([]);
   const [optionsclases, setOptionsClases] = useState([]);
+  const [openPreview, setOpenPreview] = useState(false);
 
-
+  const handleOpenPrewieChange = (e) => {
+    if (openPreview) {
+      return setOpenPreview(false)
+    }
+    return setOpenPreview(true)
+  }
 
   const handleChange = (event) => {
     const {
       target: { value },
     } = event;
     setClase(
-      // On autofill we get a stringified value.
       typeof value === 'string' ? value.split(',') : value,
     );
   };
@@ -116,7 +117,7 @@ const FileUpload = ({ typeUpdload }) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch(`http://${serverBackend.HOSTNAME}:${serverBackend.PORT}/all/courses`);
+        const response = await fetch(`http://${serverBackend.HOSTNAME}:${serverBackend.PORT}/all/courses`, { withCredentials: true });
         const data = await response.json();
         setOptionsCursos(data);
       } catch (error) {
@@ -130,7 +131,7 @@ const FileUpload = ({ typeUpdload }) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch(`http://${serverBackend.HOSTNAME}:${serverBackend.PORT}/all/clases`);
+        const response = await fetch(`http://${serverBackend.HOSTNAME}:${serverBackend.PORT}/all/clases`, { withCredentials: true });
         const data = await response.json();
         setOptionsClases(data);
       } catch (error) {
@@ -142,7 +143,14 @@ const FileUpload = ({ typeUpdload }) => {
   }, [])
 
   const handleCursoChange = (event) => {
-    setCurso(event.target.value);
+    const {
+      target: { value },
+    } = event;
+    setCurso(
+      typeof value === 'string' ? value.split(',') : value,
+    );
+    console.log(event.target);
+    console.log(optionscursos);
   };
 
   const handleQuizChange = (event) => {
@@ -192,6 +200,21 @@ const FileUpload = ({ typeUpdload }) => {
     setTitle(e.target.value);
   };
 
+
+  const hooksPropsPreview = {
+    clase,
+    readme,
+    file,
+    text,
+    title,
+    curso,
+    quiz,
+    sheet,
+    optionscursos,
+    optionsclases,
+  };
+
+
   const handleUpload = async () => {
     const formData = new FormData();
     let linksquiz = [];
@@ -217,7 +240,7 @@ const FileUpload = ({ typeUpdload }) => {
         return alert('Por favor, verifique que sea un enlace de Google Sheets');
       }
       formData.append('quiz', JSON.stringify(linksquiz));
-      
+
     } else {
       formData.append('file', file);
       formData.append('resumen', text);
@@ -226,14 +249,14 @@ const FileUpload = ({ typeUpdload }) => {
       formData.append('readme', readme);
     }
 
+    formData.append('tipo', typeUpdload);
 
-    console.log(formData);
     try {
       await axios.post(`http://${serverBackend.HOSTNAME}:${serverBackend.PORT}/upload`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
-      });
+      }, { withCredentials: true });
       alert('Se creó la clase exitosamente.');
     } catch (error) {
       console.error('Error al subir el archivo y el texto:', error);
@@ -242,219 +265,489 @@ const FileUpload = ({ typeUpdload }) => {
   };
 
 
+
   return (
     <ThemeProvider theme={defaultTheme}>
-      <Grid container component="main" sx={backgroundPattern} style={
-        {
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'center',
-          alignItems: 'center',
-          height: '100%',
-          gap: '40px',
-          padding: '50px'
-        }
-      }>
-        <Grid item align="center">
-          <Paper style={stylesText.paper} elevation={3} >
-            <Typography style={stylesText.text}>
-              {typeUpdload ? ('Crea un nuevo curso') : ('Crea una nueva clase')}
-            </Typography>
-          </Paper>
-        </Grid>
-        <Grid container spacing={2} xs={10} md={6} >
-          {!typeUpdload ?
-            (
+      <Grid container component="main" >
+        <CssBaseline />
+        {isMobile && (
+          <Grid position='fixed' style={{
+            margin: '10px',
+            bottom: 0
+          }}>
+            <Box>
+              <Button disabled={false}
+                size="small"
+                variant="large"
+                onClick={handleOpenPrewieChange}
+                style={{
+                  backgroundColor: 'rgb(4, 13, 18)',
+                  color: 'white'
+                }}> { openPreview ? 'Cerrar' : 'Abrir' } Preview</Button>
+            </Box>
+          </Grid>
+        )}
+        {!isMobile || openPreview ? (
+          <Grid item
+            xs={(openPreview ? 12 : false) }
+            md={(openPreview ? 12 : 8)}
+            sm={(openPreview ? 12 : 8)}
+            style={{
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center', // Alinea verticalmente al centro
+              height: '100%',
+              display: { xs: 'none', sm: 'block' }
+            }}
+            square
+          >
+            <Box
+              sx={{
+                height: '100vh',
+                width: '100%',
+                borderRight: '1px solid black',
+                display: { xs: 'none', sm: 'block' },
+
+                overflow: 'auto',
+                display: 'flex', // Usar Flexbox
+                flexDirection: 'column', // Columnas para alinear verticalmente
+              }}
+
+            >
+              <PreviewCourse {...hooksPropsPreview} style={{ height: '100%', width: '100%', display: { xs: 'none', sm: 'block' } }} />
+            </Box>
+          </Grid>
+        ) : (
+          <Grid />
+        )}
+
+<Grid item xs={isMobile ? 12 : 0} sm={12} md={isMobile || openPreview ? 12 : 4} component={Paper}
+            style={
+              {
+                backgroundColor: 'transparent',
+                border: 'none',
+                boxShadow: 'none'
+              }
+            }
+            square>
+            <Box
+              sx={{
+                height: '100vh',
+                width: '100%',
+                display: 'flex',
+                padding: '10px',
+                flexDirection: 'column',
+                justifyContent: 'center',
+              }}
+            >
+              {!typeUpdload ?
+                (
+                  <Grid item xs={12}>
+                    <input
+                      type="file"
+                      accept="video/*"
+                      style={{ display: 'none' }}
+                      id="file-input"
+                      onChange={handleFileChange}
+                    />
+                    <label htmlFor="file-input">
+                      <Button
+                        variant="outlined"
+                        component="span"
+                        style={{ color: 'white', backgroundColor: '#78D6C6', fontSize: '18px' }}
+                        sx={hoveredButton}
+                        className='titleClassUpload'
+                      >
+                        Seleccionar Video
+                      </Button>
+                    </label>
+                  </Grid>
+                ) :
+                (<Grid />)
+              }
+
+              <Grid item xs={12} >
+                <Paper style={stylesText.paper} elevation={3} >
+                  <TextField
+                    label="Titulo *"
+                    variant="outlined"
+                    fullWidth
+                    value={title}
+                    onChange={handleTitleChange}
+                  />
+                </Paper>
+              </Grid>
+
+
+              {
+                typeUpdload ? (
+                  <Grid item xs={12}>
+                    <Paper style={stylesText.paper} elevation={3} >
+                      <FormControl sx={{ width: '100%' }}>
+                        <InputLabel id="demo-multiple-chip-label">Clases</InputLabel>
+                        <Select
+                          labelId="demo-multiple-chip-label"
+                          id="demo-multiple-chip"
+                          multiple
+                          value={clase}
+                          onChange={handleChange}
+                          input={<OutlinedInput id="select-multiple-chip" label="clases" />}
+                          renderValue={(selected) => (
+                            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                              {selected.map((value) => (
+                                <Chip key={value} label={optionsclases.map((nombre) => {
+                                  if (nombre.id === value) return nombre.clase;
+                                })} />
+                              ))}
+                            </Box>
+                          )}
+                          MenuProps={MenuProps}
+                        >
+                          {optionsclases.map((data) => (
+                            <MenuItem
+                              key={data.id}
+                              value={data.id}
+                              style={getStyles(data.clase, clase, theme)}
+                            >
+                              {data.clase}
+                            </MenuItem>
+                          ))}
+                        </Select>
+                      </FormControl>
+                    </Paper>
+                  </Grid>
+                ) : (
+                  <Grid item xs={12}>
+                    <FormControl fullWidth sx={{ m: 1 }} size="small">
+                      <InputLabel id="demo-select-small-label">Curso</InputLabel>
+                      <Select
+                        labelId="demo-select-small-label"
+                        id="demo-select-small"
+                        value={curso}
+                        label="Curso"
+                        onChange={handleCursoChange}
+                        sx={stylesText.paper}
+                      >
+                        {optionscursos.length ? optionscursos.map((option) => (
+                          <MenuItem
+                            key={option.id}
+                            value={option.id}>
+                            {option.curso}
+                          </MenuItem>
+                        )) : <MenuItem value="">
+                          <em>None</em>
+                        </MenuItem>}
+                      </Select>
+                    </FormControl>
+                  </Grid>
+                )
+              }
+
+              <Grid item xs={12} style={{
+                marginBottom: '10px',
+              }}>
+                <Paper style={stylesText.paper} >
+                  <TextField
+                    label="Resumen *"
+                    variant="outlined"
+                    fullWidth
+                    multiline
+                    title={text}
+                    rows={8}
+
+                    onChange={handleTextChange}
+                  />
+                </Paper>
+              </Grid>
+              {typeUpdload ? (
+                <Grid item xs={12}>
+                  <Paper style={stylesText.paper} >
+                    <TextField
+                      label="Link de quiz *"
+                      variant="outlined"
+                      fullWidth
+                      value={quiz}
+                      onChange={handleQuizChange}
+                    />
+                  </Paper>
+                </Grid>
+
+              ) : (
+                <Grid> </Grid>
+              )}
+              {typeUpdload ? (
+                <Grid item xs={12}>
+                  <Paper style={stylesText.paper} >
+                    <TextField
+                      label="Link del google sheet *"
+                      variant="outlined"
+                      fullWidth
+                      value={sheet}
+                      onChange={handleSheetChange}
+                    />
+                  </Paper>
+                </Grid>
+
+              ) : (
+                <Grid> </Grid>
+              )}
               <Grid item xs={12} style={{
                 display: 'flex',
-                justifyContent: 'center',
-              }}>
+                justifyContent: 'center'
+              }} >
                 <input
                   type="file"
-                  accept="video/*"
                   style={{ display: 'none' }}
-                  id="file-input"
-                  onChange={handleFileChange}
+                  id="readme-input"
+                  onChange={handleReadmeChange}
                 />
-                <label htmlFor="file-input">
+                <label htmlFor="readme-input">
                   <Button
                     variant="outlined"
                     component="span"
+                    fullWidth
                     style={{ color: 'white', backgroundColor: '#78D6C6', fontSize: '18px' }}
                     sx={hoveredButton}
-                    className='titleClassUpload'
+                    startIcon={<CloudUploadIcon />}
                   >
-                    Seleccionar Video
+                    Subir readme
                   </Button>
                 </label>
               </Grid>
-            ) :
-            (<Grid />)
-          }
-
-          <Grid item xs={12} >
-            <Paper style={stylesText.paper} elevation={3} >
-              <TextField
-                label="Titulo *"
-                variant="outlined"
-                fullWidth
-                value={title}
-                onChange={handleTitleChange}
-              />
-            </Paper>
-          </Grid>
-
-
-          {
-            typeUpdload ? (
-              <Grid item xs={12}>
-                <Paper style={stylesText.paper} elevation={3} >
-                  <FormControl sx={{ m: 1, width: '100%' }}>
-                    <InputLabel id="demo-multiple-chip-label">Clases</InputLabel>
-                    <Select
-                      labelId="demo-multiple-chip-label"
-                      id="demo-multiple-chip"
-                      multiple
-                      value={clase}
-                      onChange={handleChange}
-                      input={<OutlinedInput id="select-multiple-chip" label="clases" />}
-                      renderValue={(selected) => (
-                        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                          {selected.map((value) => (
-                            <Chip key={value} label={optionsclases.map((nombre) => {
-                              if (nombre.id === value) return nombre.clase;
-                            })} />
-                          ))}
-                        </Box>
-                      )}
-                      MenuProps={MenuProps}
-                    >
-                      {optionsclases.map((data) => (
-                        <MenuItem
-                          key={data.id}
-                          value={data.id}
-                          style={getStyles(data.clase, clase, theme)}
-                        >
-                          {data.clase}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                  </FormControl>
-                </Paper>
+              <Grid item xs={12} style={{
+                display: 'flex',
+                justifyContent: 'center'
+              }} >
+                <Button
+                  color="primary"
+                  onClick={handleUpload}
+                  style={{ height : '50px' , color: 'white', backgroundColor: '#78D6C6', fontSize: '18px' }}
+                  sx={hoveredButton}
+                  className='titleClassUpload'
+                >
+                  Crear clase
+                </Button>
               </Grid>
-            ) : (
-              <Grid item xs={12}>
-                <FormControl fullWidth sx={{ m: 1 }} size="small">
-                  <InputLabel id="demo-select-small-label">Curso</InputLabel>
-                  <Select
-                    labelId="demo-select-small-label"
-                    id="demo-select-small"
-                    value={curso}
-                    label="Curso"
-                    onChange={handleCursoChange}
-                    sx={stylesText.paper}
-                  >
-                    {optionscursos.length ? optionscursos.map((option) => (
-                      <MenuItem key={option.id} value={option.curso}>
-                        {option.curso}
-                      </MenuItem>
-                    )) : <MenuItem value="">
-                      <em>None</em>
-                    </MenuItem>}
-                  </Select>
-                </FormControl>
-              </Grid>
-            )
-          }
 
-          <Grid item xs={12} >
-            <Paper style={stylesText.paper} elevation={3} >
-              <TextField
-                label="Resumen *"
-                variant="outlined"
-                fullWidth
-                multiline
-                title={text}
-                rows={8}
-                onChange={handleTextChange}
-              />
-            </Paper>
-          </Grid>
-          {typeUpdload ? (
-            <Grid item xs={12}>
-              <Paper style={stylesText.paper} elevation={3} >
-                <TextField
-                  label="Link de quiz *"
-                  variant="outlined"
-                  fullWidth
-                  value={quiz}
-                  onChange={handleQuizChange}
-                />
-              </Paper>
-            </Grid>
+            </Box>
 
-          ) : (
-            <Grid> </Grid>
-          )}
-          {typeUpdload ? (
-            <Grid item xs={12}>
-              <Paper style={stylesText.paper} elevation={3} >
-                <TextField
-                  label="Link del google sheet *"
-                  variant="outlined"
-                  fullWidth
-                  value={sheet}
-                  onChange={handleSheetChange}
-                />
-              </Paper>
-            </Grid>
-
-          ) : (
-            <Grid> </Grid>
-          )}
-          <Grid item xs={12} style={{
-            display: 'flex',
-            justifyContent: 'center'
-          }} >
-            <input
-              type="file"
-              style={{ display: 'none' }}
-              id="readme-input"
-              onChange={handleReadmeChange}
-            />
-            <label htmlFor="readme-input">
-              <Button
-                variant="outlined"
-                component="span"
-                fullWidth
-                style={{ color: 'white', backgroundColor: '#78D6C6', fontSize: '18px' }}
-                sx={hoveredButton}
-              >
-                Subir readme
-              </Button>
-            </label>
           </Grid>
-          <Grid item xs={12} style={{
-            display: 'flex',
-            justifyContent: 'center'
-          }} >
-            <Button
-              color="primary"
-              onClick={handleUpload}
-              style={{ color: 'white', backgroundColor: '#78D6C6', fontSize: '18px' }}
-              sx={hoveredButton}
-              className='titleClassUpload'
-            >
-              Crear clase
-            </Button>
-          </Grid>
+        <Grid item xs={12} >
+          <Footer sx={{ mt: 0.2 }} />
         </Grid>
       </Grid>
-      <Grid item xs={12} >
-
-        <Footer sx={{ mt: 0.2 }} />
-      </Grid>
     </ThemeProvider>
+    /*     <ThemeProvider theme={defaultTheme}>
+          <Grid container component="main" sx={backgroundPattern} md={12} >
+          <CssBaseline />
+          
+            <Grid item align="center">
+              <Paper style={stylesText.paper} elevation={3} xs={12} >
+                <Typography style={stylesText.text}>
+                  {typeUpdload ? ('Crea un nuevo curso') : ('Crea una nueva clase')}
+                </Typography>
+              </Paper>
+            </Grid>
+    
+            <Grid item xs={12} md={6} style={
+            {
+              display: 'flex',
+              flexDirection : 'column',
+              height: 'auto',
+            }
+          } >
+    
+              {!typeUpdload ?
+                (
+                  <Grid item xs={12} style={{
+                    display: 'flex',
+                    justifyContent: 'center',
+                  }}>
+                    <input
+                      type="file"
+                      accept="video/*"
+                      style={{ display: 'none' }}
+                      id="file-input"
+                      onChange={handleFileChange}
+                    />
+                    <label htmlFor="file-input">
+                      <Button
+                        variant="outlined"
+                        component="span"
+                        style={{ color: 'white', backgroundColor: '#78D6C6', fontSize: '18px' }}
+                        sx={hoveredButton}
+                        className='titleClassUpload'
+                      >
+                        Seleccionar Video
+                      </Button>
+                    </label>
+                  </Grid>
+                ) :
+                (<Grid />)
+              }
+    
+              <Grid item xs={12} >
+                <Paper style={stylesText.paper} elevation={3} >
+                  <TextField
+                    label="Titulo *"
+                    variant="outlined"
+                    fullWidth
+                    value={title}
+                    onChange={handleTitleChange}
+                  />
+                </Paper>
+              </Grid>
+    
+    
+              {
+                typeUpdload ? (
+                  <Grid item xs={12}>
+                    <Paper style={stylesText.paper} elevation={3} >
+                      <FormControl sx={{ m: 1, width: '100%' }}>
+                        <InputLabel id="demo-multiple-chip-label">Clases</InputLabel>
+                        <Select
+                          labelId="demo-multiple-chip-label"
+                          id="demo-multiple-chip"
+                          multiple
+                          value={clase}
+                          onChange={handleChange}
+                          input={<OutlinedInput id="select-multiple-chip" label="clases" />}
+                          renderValue={(selected) => (
+                            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                              {selected.map((value) => (
+                                <Chip key={value} label={optionsclases.map((nombre) => {
+                                  if (nombre.id === value) return nombre.clase;
+                                })} />
+                              ))}
+                            </Box>
+                          )}
+                          MenuProps={MenuProps}
+                        >
+                          {optionsclases.map((data) => (
+                            <MenuItem
+                              key={data.id}
+                              value={data.id}
+                              style={getStyles(data.clase, clase, theme)}
+                            >
+                              {data.clase}
+                            </MenuItem>
+                          ))}
+                        </Select>
+                      </FormControl>
+                    </Paper>
+                  </Grid>
+                ) : (
+                  <Grid item xs={12}>
+                    <FormControl fullWidth sx={{ m: 1 }} size="small">
+                      <InputLabel id="demo-select-small-label">Curso</InputLabel>
+                      <Select
+                        labelId="demo-select-small-label"
+                        id="demo-select-small"
+                        value={curso}
+                        label="Curso"
+                        onChange={handleCursoChange}
+                        sx={stylesText.paper}
+                      >
+                        {optionscursos.length ? optionscursos.map((option) => (
+                          <MenuItem key={option.id} value={option.curso}>
+                            {option.curso}
+                          </MenuItem>
+                        )) : <MenuItem value="">
+                          <em>None</em>
+                        </MenuItem>}
+                      </Select>
+                    </FormControl>
+                  </Grid>
+                )
+              }
+    
+              <Grid item xs={12} >
+                <Paper style={stylesText.paper} elevation={3} >
+                  <TextField
+                    label="Resumen *"
+                    variant="outlined"
+                    fullWidth
+                    multiline
+                    title={text}
+                    rows={8}
+                    onChange={handleTextChange}
+                  />
+                </Paper>
+              </Grid>
+              {typeUpdload ? (
+                <Grid item xs={12}>
+                  <Paper style={stylesText.paper} elevation={3} >
+                    <TextField
+                      label="Link de quiz *"
+                      variant="outlined"
+                      fullWidth
+                      value={quiz}
+                      onChange={handleQuizChange}
+                    />
+                  </Paper>
+                </Grid>
+    
+              ) : (
+                <Grid> </Grid>
+              )}
+              {typeUpdload ? (
+                <Grid item xs={12}>
+                  <Paper style={stylesText.paper} elevation={3} >
+                    <TextField
+                      label="Link del google sheet *"
+                      variant="outlined"
+                      fullWidth
+                      value={sheet}
+                      onChange={handleSheetChange}
+                    />
+                  </Paper>
+                </Grid>
+    
+              ) : (
+                <Grid> </Grid>
+              )}
+              <Grid item xs={12} style={{
+                display: 'flex',
+                justifyContent: 'center'
+              }} >
+                <input
+                  type="file"
+                  style={{ display: 'none' }}
+                  id="readme-input"
+                  onChange={handleReadmeChange}
+                />
+                <label htmlFor="readme-input">
+                  <Button
+                    variant="outlined"
+                    component="span"
+                    fullWidth
+                    style={{ color: 'white', backgroundColor: '#78D6C6', fontSize: '18px' }}
+                    sx={hoveredButton}
+                  >
+                    Subir readme
+                  </Button>
+                </label>
+              </Grid>
+              <Grid item xs={12} style={{
+                display: 'flex',
+                justifyContent: 'center'
+              }} >
+                <Button
+                  color="primary"
+                  onClick={handleUpload}
+                  style={{ color: 'white', backgroundColor: '#78D6C6', fontSize: '18px' }}
+                  sx={hoveredButton}
+                  className='titleClassUpload'
+                >
+                  Crear clase
+                </Button>
+              </Grid>
+            </Grid>
+          </Grid>
+          <Grid item xs={12} >
+            <Footer sx={{ mt: 0.2 }} />
+          </Grid>
+        </ThemeProvider> */
 
   );
 };

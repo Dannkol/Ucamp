@@ -2,22 +2,33 @@ import fs from 'fs/promises';
 import path from 'path';
 import { promisify } from 'util';
 
-const unlinkAsync = promisify(fs.unlink)
+const unlinkAsync = promisify(fs.rm);
 
 const deletAny = async (pathdelet) => {
-    for (const filePath of pathdelet) {
-        try {
-            await unlinkAsync(filePath)
-            console.log('Archivo eliminado:', filePath);
-        } catch (err) {
-            console.log(err);
-            if (err.code === 'ENOENT') {
-                console.warn('El archivo no existe en la ubicación especificada:', filePath);
-            } else {
-                console.error('Error al eliminar el archivo:', err);
-            }
-        }
-    }
-}
+  let count = 0;
 
-export { deletAny }
+  for (const filePath of pathdelet) {
+    console.log(pathdelet, filePath);
+    if (fs.stat(filePath)) {
+      console.log('si existe');
+
+      // Aumenta el tiempo de espera del proceso de eliminación del video.
+      // El video se eliminará después de 10 segundos.
+      setTimeout( async () => {
+        try {
+          await unlinkAsync(filePath, { recursive: true });
+          console.log('Archivo eliminado:', filePath);
+          count++;
+        } catch (err) {
+          console.error('Error al eliminar el archivo:', err);
+        }
+      }, 10000);
+    } else {
+      count++;
+    }
+  }
+
+  return count;
+};
+
+export { deletAny };

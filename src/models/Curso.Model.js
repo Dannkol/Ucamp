@@ -10,23 +10,32 @@ const getCoursesName = async () => {
             {
                 $project: {
                     _id: 0,
-                    id: { $arrayElemAt: ['$courses._id', 0] },
-                    curso: { $arrayElemAt: ['$courses.title', 0] }
-                }
+                    id: '$courses._id',
+                    curso: '$courses.title',
+                },
             },
             {
                 $match: {
-                    $or: [
-                        { id: { $exists: true, $ne: null } },
-                        { curso: { $exists: true, $ne: null } }
-                    ]
-                }
-            }
+                    $or: [{ id: { $exists: true, $ne: null } }],
+                },
+            },
         ];
 
-
         const result = await users.aggregate(pipeline).toArray();
-        return result
+
+        const transformedArray = [];
+
+        // Iteramos sobre el array de entrada
+        result.forEach((item) => {
+          // Si ambos campos id y curso no están vacíos
+          if (item.id.length > 0 && item.curso.length > 0) {
+            // Iteramos sobre los elementos en los campos id y curso y creamos un nuevo objeto para cada par
+            item.id.forEach((id, index) => {
+              transformedArray.push({ id: id.toString(), curso: item.curso[index] });
+            });
+          }
+        });
+        return transformedArray
 
     } catch (error) {
         return null
@@ -137,16 +146,16 @@ const createNewCourse = async (data) => {
             }
         }
 
-        const result = await users.updateOne(query, pipeline);
+        const result = await users.findOneAndUpdate(query, pipeline);
 
         return result
 
     } catch (error) {
-        console.error(JSON.stringify(error.errInfo, null, 2));
-        return null;
+        /* console.error(JSON.stringify(error.errInfo, null, 2)); */
+        throw error;
     } finally {
         await client.close();
     }
 }
 
-export { getCoursesName, getClasesName, getAllClasesByIds , createNewCourse }
+export { getCoursesName, getClasesName, getAllClasesByIds, createNewCourse }

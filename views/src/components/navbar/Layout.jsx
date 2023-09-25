@@ -16,7 +16,7 @@ import axios from 'axios';
 export default function Layout({ children }) {
     const navigate = useNavigate()
     const theme = useTheme()
-    const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+    const isMobile = useMediaQuery(theme.breakpoints.down("xs"));
     const location = useLocation();
 
     // Verificar si la ubicación actual es "/login"
