@@ -67,7 +67,7 @@ const uploadclass = async (req, res) => {
 
       res.status(200).send('Archivo subido correctamente.');
     } catch (error) {
-
+      console.log(error);
       for (let item in req.files) {
         req.files[item].forEach((value) => {
           linksToDelete.push(value.path);
@@ -105,6 +105,8 @@ const uploadclass = async (req, res) => {
 
       res.status(200).send('Archivo subido correctamente.');
     } catch (error) {
+      console.log(error);
+
       for (let item in req.files) {
         req.files[item].forEach((value) => {
           linksToDelete.push(value.path);

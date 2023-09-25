@@ -9,6 +9,8 @@ dotenv.config();
 
 const Router_Init = Router();
 
+const SERVER_FRONT = JSON.parse(process.env.SERVER_FRONT)
+
 Router_Init.get('/ok', ensureAuthenticated, (req, res) => {
     // Aquí puedes manejar las acciones que deseas realizar en la ruta protegida
     res.send(`<!DOCTYPE html>
@@ -16,9 +18,8 @@ Router_Init.get('/ok', ensureAuthenticated, (req, res) => {
       <body>
       </body>
       <script>
-        console.log('hola')
         const targetWindow = window.opener || window.parent; // Obtener una referencia a la ventana receptora
-        targetWindow.postMessage(true, 'http://localhost:5102')
+        targetWindow.postMessage(true, 'http://${SERVER_FRONT.HOSTNAME}:${SERVER_FRONT.PORT}')
       </script>
     </html>`);
 });

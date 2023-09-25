@@ -52,12 +52,9 @@ export default function SignInSide() {
 
     window.addEventListener('message', (event) => {
       // Verificar el origen del mensaje si es necesario
-      console.log(event);
-      if (event.origin === 'http://localhost:5101') {
+      if (event.origin === `http://${serverBackend.HOSTNAME}:${serverBackend.PORT}`) {
         // Acceder al mensaje recibido
         const message = event.data;
-        console.log(message);
-
         // Si el mensaje es igual a true, cierra la ventana popup
         if (message === true) {
           popup.close();

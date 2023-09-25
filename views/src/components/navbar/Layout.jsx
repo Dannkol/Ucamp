@@ -37,7 +37,7 @@ export default function Layout({ children }) {
     return (
         <>
             {!isLoginPage ? <Box sx={{ flexGrow: 1 }}>
-                <AppBar position="relative" enableColorOnDark style={{ backgroundColor: '#040D12' }} >
+                <AppBar position="relative" enableColorOnDark style={{ backgroundColor: '#0f7d7e' }} >
                     <Toolbar>
                         <IconButton
                             size="large"

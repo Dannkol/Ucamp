@@ -176,16 +176,15 @@ export function PreviewCourse(props) {
                 style={
                     {
                         width: '100%',
-                        overflowX: 'auto',
-                        display: 'flex',
-                        gap: '12px',
+                        overflow: 'auto',
+                        whiteSpace: 'nowrap',
                         padding: '12px'
                     }
                 }
             >
                 {
                     fetchclase.map(value => (
-                        <Card sx={{ width: 275, maxHeight: 350 , borderBottom : '1px solid black', borderLeft : '1px solid black'}} style={stylesText.paper} >
+                        <Card sx={{ margin: '12px' ,display : 'inline-block' , width: '275px', maxHeight: 350 , borderBottom : '1px solid black', borderLeft : '1px solid black'}} style={stylesText.paper} >
                             <CardContent>
                                 <Typography variant="h5" style={{ wordWrap: 'break-word' }} component="div">
                                     {value.classes.title}
