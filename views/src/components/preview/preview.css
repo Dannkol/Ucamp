@@ -1,0 +1,20 @@
+.floating-image {
+    animation-duration: 4s;
+    animation-name: floating;
+    animation-iteration-count: infinite;
+    transform-origin: center bottom; /* Define el punto de origen para la rotación */
+}
+
+@keyframes floating {
+    0%, 100% {
+        transform: translateY(0px) rotate(0deg); /* Aplica ambas transformaciones en la misma declaración */
+    }
+
+    50% {
+        transform: translateY(-10px) rotate(0.5deg); /* Aplica ambas transformaciones en la misma declaración */
+    }
+
+    75% {
+        transform: translateY(-4px) rotate(-0.2deg); /* Solo rotación en este punto */
+    }
+}

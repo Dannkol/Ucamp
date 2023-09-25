@@ -33,7 +33,7 @@ function DrawerComponent() {
         </List>
       </Drawer>
       <IconButton onClick={() => setOpenDrawer(!openDrawer)}>
-        <MenuIcon />
+        <MenuIcon style={ { backgroundColor : 'white' } } />
       </IconButton>
     </>
   );
