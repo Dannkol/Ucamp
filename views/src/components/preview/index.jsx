@@ -49,7 +49,8 @@ export function IndexPreview(props) {
 
     const [clase, setClase] = useState([]);
     const [readme, setReadme] = useState(null);
-    const [file, setFile] = useState(null);
+    const [readmeclass, setReadmeClass] = useState(null);
+    const [filevideo, setFileVideo] = useState(null);
     const [text, setText] = useState(null);
     const [title, setTitle] = useState(null);
     const [textclass, setTextClass] = useState(null);
@@ -72,6 +73,7 @@ export function IndexPreview(props) {
                 setTitle(data.courses?.[0]?.title || '')
                 setQuiz(data.courses?.[0]?.quiz?.[0] || '')
                 setSheet(data.courses?.[0]?.quiz?.[1] || '')
+                setReadme(`http://localhost:5101/getReadme/${fetchcourse.courses[0].content.split('.')[0]}`)
             } catch (error) {
                 console.error('Error fetching data: ', error);
             }
@@ -87,6 +89,8 @@ export function IndexPreview(props) {
                     setFetchClase(fetchcourse.courses[0].classes);
                     setTextClass(fetchcourse.courses[0].classes[optionsclases].summary);
                     setTitleClass(fetchcourse.courses[0].classes[optionsclases].title)
+                    setFileVideo(`http://localhost:5101/getVideo/${fetchcourse.courses[0].classes[optionsclases].content[0].split('.')[0]}`)
+                    setReadmeClass(`http://localhost:5101/getReadme/${fetchcourse.courses[0].classes[optionsclases].content[1].split('.')[0]}`)
                 } catch (error) {
                     console.error(error);
                 }
@@ -107,12 +111,15 @@ export function IndexPreview(props) {
         quiz,
         sheet,
         tipo,
+        readme,
         setOptionsClases
     };
 
     const hooksPropsPreviewClass = {
         textclass,
         titleclass,
+        filevideo,
+        readme : readmeclass,
         tipo,
         setOptionsClases
     };

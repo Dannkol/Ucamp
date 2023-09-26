@@ -23,12 +23,12 @@ const CreatPath = async (req) => {
       switch (key) {
         case 'file':
           pathVideo = req.files.file.map(e => {
-            if (e.mimetype === 'video/mp4') return `..${req.path}/${e.filename}`;
+            if (e.mimetype === 'video/mp4') return `${e.filename}`;
           });
           break;
         case 'readme':
           pathReadme = req.files.readme.map(e => {
-            if (e.mimetype === 'text/markdown') return `..${req.path}/${e.filename}`;
+            if (e.mimetype === 'text/markdown') return `${e.filename}`;
           });
           break;
 
@@ -100,8 +100,6 @@ const uploadclass = async (req, res) => {
         content: [path.pathVideo[0], path.pathReadme[0]],
         update_date: new Date(),
       };
-
-      console.log(data);
 
       await createNewClase(data)
 

@@ -34,7 +34,7 @@ const serverBackend = JSON.parse(import.meta.env.VITE_SERVERBACKEND)
 
 export function PreviewCourse(props) {
 
-    const { title, textclass, titleclass, file, curso, clase, readme, text, quiz, sheet, tipo, setOptionsClases } = props;
+    const { title, filevideo, textclass, titleclass, file, curso, clase, readme, text, quiz, sheet, tipo, setOptionsClases } = props;
 
     const [shouldHideDiv, setShouldHideDiv] = useState(false);
 
@@ -55,20 +55,37 @@ export function PreviewCourse(props) {
         if (file) {
             const videoURL = URL.createObjectURL(file);
             setVideoUrl(videoURL);
+        } else if (filevideo) {
+            setVideoUrl(filevideo);
         }
-    }, [file]);
+    }, [file, filevideo]);
 
     const [fetchclase, setFetchclase] = useState([])
 
     useEffect(() => {
         if (readme) {
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                setMarkdownContent(e.target.result); // Actualizar el estado con el contenido del archivo Markdown
-            };
-            reader.readAsText(readme);
+            try {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    setMarkdownContent(e.target.result); // Actualizar el estado con el contenido del archivo Markdown
+                };
+                reader.readAsText(readme);
+            } catch (error) {
+                async function fetchData() {
+                    try {
+                        const response = await axios.get(readme);
+                        const text = response.data;
+                        console.log('readme', text);
+                        setMarkdownContent(text);
+                    } catch (error) {
+                        console.error('Error al descargar el archivo:', error);
+                    }
+                }
+                fetchData();
+            }
         }
     }, [readme]);
+
 
     useEffect(() => {
         if (text) {
