@@ -17,6 +17,9 @@ import { Router_Init } from './src/routes/v1/routes.js';
 
 import { uploads } from './src/routes/v1/upload.routes.js';
 
+/* ROUTES PREVIEW */
+import { preview } from './src/routes/v1/getPreview.routes.js';
+
 dotenv.config();
 const SERVER = JSON.parse(process.env.SERVER)
 
@@ -36,6 +39,7 @@ app.use(cors({
 app.use(Router_Auth)
 app.use(Router_Init)
 app.use(uploads)
+app.use(preview)
 
 
 

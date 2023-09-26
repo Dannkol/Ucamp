@@ -3,7 +3,7 @@ import path from 'path';
 import fs from 'fs/promises';
 import { deletAny } from '../models/DelateFiled.js';
 
-import { getAllClasesByIds, createNewCourse } from '../models/Curso.Model.js';
+import { getAllClasesByIds, createNewCourse, createNewClase } from '../models/Curso.Model.js';
 
 let linksToDelete = [];
 
@@ -60,7 +60,7 @@ const uploadclass = async (req, res) => {
         summary: req.body.resumen,
         quiz: JSON.parse(req.body.quiz),
         content: path.pathReadme[0],
-        update_date: 'sadasdas',
+        update_date: new Date(),
       };
 
       await createNewCourse(data)
@@ -101,7 +101,9 @@ const uploadclass = async (req, res) => {
         update_date: new Date(),
       };
 
-      await createNewCourse(data)
+      console.log(data);
+
+      await createNewClase(data)
 
       res.status(200).send('Archivo subido correctamente.');
     } catch (error) {
@@ -128,5 +130,8 @@ const uploadclass = async (req, res) => {
   }
 
 };
+
+
+
 
 export { uploadclass };

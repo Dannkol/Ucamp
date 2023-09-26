@@ -10,8 +10,6 @@ const deletAny = async (pathdelet) => {
   for (const filePath of pathdelet) {
     console.log(pathdelet, filePath);
     if (fs.stat(filePath)) {
-      console.log('si existe');
-
       // Aumenta el tiempo de espera del proceso de eliminación del video.
       // El video se eliminará después de 10 segundos.
       setTimeout( async () => {

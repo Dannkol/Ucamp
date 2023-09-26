@@ -63,7 +63,7 @@ function getStyles(name, personName, theme) {
 
 const hoveredButton = {
   '&:hover': {
-    color : '#78D6C6',
+    color: '#78D6C6',
     backgroundColor: 'white', // Cambia el color de fondo al pasar el cursor
     transition: 'background-color 1s ease',
     fontSize: '14.2px'
@@ -309,7 +309,7 @@ const FileUpload = ({ typeUpdload }) => {
               sx={{
                 height: '100vh',
                 width: '100%',
-                
+
                 display: { xs: 'none', sm: 'block' },
 
                 overflow: 'auto',
@@ -330,7 +330,7 @@ const FileUpload = ({ typeUpdload }) => {
           <Grid />
 
           :
-          <Grid item xs={isMobile ? 12 : false}  sm={12} md={isMobile ? 0 : 4} component={Paper}
+          <Grid item xs={isMobile ? 12 : false} sm={12} md={isMobile ? 0 : 4} component={Paper}
             style={
               {
                 backgroundColor: '#bdcdd0',
@@ -363,7 +363,7 @@ const FileUpload = ({ typeUpdload }) => {
                       <Button
                         variant="outlined"
                         component="span"
-                        style={{ color: 'white', backgroundColor: '#78D6C6', fontSize: '18px' }}
+                        style={{ color: '#207178', backgroundColor: 'white', fontSize: '18px' }}
                         sx={hoveredButton}
                         className='titleClassUpload'
                       >
@@ -427,27 +427,29 @@ const FileUpload = ({ typeUpdload }) => {
                   </Grid>
                 ) : (
                   <Grid item xs={12}>
-                    <FormControl fullWidth sx={{ m: 1 }} size="small">
-                      <InputLabel id="demo-select-small-label">Curso</InputLabel>
-                      <Select
-                        labelId="demo-select-small-label"
-                        id="demo-select-small"
-                        value={curso}
-                        label="Curso"
-                        onChange={handleCursoChange}
-                        sx={stylesText.paper}
-                      >
-                        {optionscursos.length ? optionscursos.map((option) => (
-                          <MenuItem
-                            key={option.id}
-                            value={option.id}>
-                            {option.curso}
-                          </MenuItem>
-                        )) : <MenuItem value="">
-                          <em>None</em>
-                        </MenuItem>}
-                      </Select>
-                    </FormControl>
+                    <Paper style={stylesText.paper} elevation={1} >
+                      <FormControl fullWidth sx={{ p: 1 }} size="small">
+                        <InputLabel id="demo-select-small-label">Curso*</InputLabel>
+                        <Select
+                          labelId="demo-select-small-label"
+                          id="demo-select-small"
+                          value={curso}
+                          label="Curso"
+                          onChange={handleCursoChange}
+                          sx={stylesText.paper}
+                        >
+                          {optionscursos.length ? optionscursos.map((option) => (
+                            <MenuItem
+                              key={option.id}
+                              value={option.id}>
+                              {option.curso}
+                            </MenuItem>
+                          )) : <MenuItem value="">
+                            <em>None</em>
+                          </MenuItem>}
+                        </Select>
+                      </FormControl>
+                    </Paper>
                   </Grid>
                 )
               }
@@ -530,7 +532,7 @@ const FileUpload = ({ typeUpdload }) => {
                 <Button
                   color="primary"
                   onClick={handleUpload}
-                  style={{ height: '50px', color: 'white', backgroundColor: '#78D6C6', fontSize: '18px' }}
+                  style={{ color: '#207178', backgroundColor: 'white', fontSize: '18px' }}
                   sx={hoveredButton}
                   className='titleClassUpload'
                 >

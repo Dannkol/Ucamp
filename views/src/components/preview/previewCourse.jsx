@@ -34,17 +34,17 @@ const serverBackend = JSON.parse(import.meta.env.VITE_SERVERBACKEND)
 
 export function PreviewCourse(props) {
 
-    const { title, file, curso, clase, readme, text, quiz, sheet } = props;
+    const { title, textclass, titleclass, file, curso, clase, readme, text, quiz, sheet, tipo, setOptionsClases } = props;
 
     const [shouldHideDiv, setShouldHideDiv] = useState(false);
 
     useEffect(() => {
-        if (title || file || clase.length > 0 || clase.length > 0 || readme || text || quiz || sheet) {
+        if (textclass || titleclass || title || file || clase?.length > 0 || clase?.length > 0 || readme || text || quiz || sheet) {
             setShouldHideDiv(true);
         } else {
             setShouldHideDiv(false);
         }
-    }, [title, file, curso, clase, readme, text, quiz, sheet]);
+    }, [title, textclass, titleclass, file, curso, clase, readme, text, quiz, sheet]);
 
     const [markdownContent, setMarkdownContent] = useState('');
     const [markdownContentText, setMarkdownContentText] = useState('');
@@ -76,6 +76,13 @@ export function PreviewCourse(props) {
         }
     }, [text]);
 
+
+    useEffect(() => {
+        if (textclass) {
+            setMarkdownContentText(textclass); // Establece el contenido de Markdown directamente
+        }
+    }, [textclass]);
+
     useEffect(() => {
         async function fetchData() {
             try {
@@ -84,10 +91,9 @@ export function PreviewCourse(props) {
                 }
                 ///all/content/clases
                 let data = []
-                if (post.clases.length > 0) {
+                if (post.clases !== undefined) {
                     const response = await axios.post(`http://${serverBackend.HOSTNAME}:${serverBackend.PORT}/all/content/clases`, post);
                     data = await response.data;
-                    console.log(data);
                 }
                 return setFetchclase(data);
                 // Almacena la respuesta en el estado fethclase
@@ -135,11 +141,19 @@ export function PreviewCourse(props) {
         },
     };
 
+    const handleChangeOptionsClases = (options) => {
+        setOptionsClases(options);
+    }
+
     return (
 
         <div style={markdownContainerStyles}>
-            <h2>Vista previa</h2>
-            <hr></hr>
+            {(!tipo) && (
+                <Grid>
+                    <h2>Vista previa</h2>
+                    <hr></hr>
+                </Grid>
+            )}
             {shouldHideDiv ? null : (
                 <Grid item align="center">
                     <Avatar alt="Preview" sx={{ width: '80%', height: 'auto' }} className="floating-image" src={PreviewImg} />
@@ -148,7 +162,7 @@ export function PreviewCourse(props) {
             <Grid item align="center">
                 <Paper style={stylesText.paper} elevation={3} xs={12} >
                     <Typography style={stylesText.text}>
-                        {title}
+                        {title ? title : titleclass}
                     </Typography>
                 </Paper>
             </Grid>
@@ -168,7 +182,7 @@ export function PreviewCourse(props) {
                             <source src={videoUrl} type="video/mp4" />
                             Tu navegador no admite la reproducción de videos.
                         </video>
-                    ) }
+                    )}
                 </Box>
             </Grid>
             <Box
@@ -184,7 +198,7 @@ export function PreviewCourse(props) {
             >
                 {
                     fetchclase.map(value => (
-                        <Card sx={{ margin: '12px' ,display : 'inline-block' , width: '275px', maxHeight: 350 , borderBottom : '1px solid black', borderLeft : '1px solid black'}} style={stylesText.paper} >
+                        <Card sx={{ margin: '12px', display: 'inline-block', width: '275px', maxHeight: 350, borderBottom: '1px solid black', borderLeft: '1px solid black' }} style={stylesText.paper} >
                             <CardContent>
                                 <Typography variant="h5" style={{ wordWrap: 'break-word' }} component="div">
                                     {value.classes.title}
@@ -205,12 +219,13 @@ export function PreviewCourse(props) {
                                         Resumen: {value.classes.summary}  asdasfasdfas d asdfasdf asd fasdfasdfasdf asdf asdf asdf asdf sdafsadfasdasdasdasdasdasdasdasdasdasdadassssssssssssssssssssssssssssssssaaaaaaaaaaaaaaaaaaaaaaaaaaaa
                                     </Typography>
                                 </Box>
-                            </CardContent>
-                            <CardActions>
                                 <Typography variant="body2" color="text.secondary">
                                     Fecha de actualización: {new Date(value.classes.update_date).toLocaleDateString()}
                                 </Typography>
-                                <Button size="small">Learn More</Button>
+                            </CardContent>
+                            <CardActions>
+
+                                <Button size="small">Ver</Button>
                             </CardActions>
                         </Card>
 
@@ -220,7 +235,7 @@ export function PreviewCourse(props) {
             <Grid item align="center" style={{
                 marginBottom: 12
             }}>
-                {text ? (
+                {text || textclass ? (
                     <Grid>
                         <Typography variant='h5' sx={{
                             textAlign: 'start',
