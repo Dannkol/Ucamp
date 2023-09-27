@@ -1,11 +1,15 @@
-import { fileURLToPath } from 'url';
 
 import { getAllCourse } from '../models/Curso.Model.js';
 
-import { createReadStream } from "fs"
+import { fileURLToPath } from 'url';
 import fs from 'fs/promises';
 import { dirname } from 'path';
 import path from 'path';
+/* import { promisify } from 'util';
+
+const statAsync = promisify(fs.stat);
+const readFileAsync = promisify(fs.readFile); */
+
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -14,12 +18,15 @@ const getVideo = async (req, res) => {
 
     const videoPath = path.join(__dirname, `../uploads/${videoId}.mp4`);
     try {
-        await fs.stat(videoPath)
-        const stream = createReadStream(videoPath);
+        const video = await fs.stat(videoPath)
+        const stream = await fs.readFile(videoPath);
         res.setHeader('Content-Type', 'video/mp4');
-        stream.pipe(res);
+        res.setHeader('Content-Disposition', 'inline');
+        res.setHeader('Content-Length', video.size);
+        res.status(200).send(stream);
 
     } catch (error) {
+        console.log(error);
         return res.status(404).send('Archivo no encontrado');
     }
 };
