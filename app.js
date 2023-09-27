@@ -1,5 +1,6 @@
 import express from 'express';
 import dotenv from "dotenv";
+import http from "http";
 
 import cors from "cors";
 
@@ -51,6 +52,13 @@ app.get('/', (req, res) => {
 
 const PORT = SERVER.PORT || 8080;
 
-app.listen(PORT, async () => {
-    console.log(`App listening at http://${SERVER.HOSTNAME}:${PORT}`);
+const server = http.createServer(app);
+
+// Configura un tiempo de espera en la red en milisegundos
+const networkTimeout = 5000; // 5000 milisegundos (5 segundos)
+
+server.timeout = networkTimeout;
+
+server.listen(PORT, () => {
+    console.log(`App listening at http://localhost:${PORT}`);
 });

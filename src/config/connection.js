@@ -19,7 +19,7 @@ const mongoConn = async () => {
     client = await MongoClient.connect(uri, options)
     return client
   } catch (error) {
-    console.log(error)
+    return
   }
 }
 
