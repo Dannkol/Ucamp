@@ -202,9 +202,6 @@ const getAllCourse = async (data) => {
         const db = getDB("uCamp_db")
         const users = await db.collection('users')
 
-
-        console.log(data);
-
         const results = await users.findOne(
             {
               "courses": {
@@ -220,7 +217,6 @@ const getAllCourse = async (data) => {
               }
             }
           );
-        console.log(results);
 
         return results
 
