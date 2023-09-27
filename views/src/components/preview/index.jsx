@@ -77,7 +77,7 @@ export function IndexPreview(props) {
                 setTitle(data.courses?.[0]?.title || '')
                 setQuiz(data.courses?.[0]?.quiz?.[0] || '')
                 setSheet(data.courses?.[0]?.quiz?.[1] || '')
-                setReadme(`http://localhost:5101/getReadme/${data.courses?.[0]?.content?.split('.')[0]}`)
+                setReadme(`http://${serverBackend.HOSTNAME}:${serverBackend.PORT}/getReadme/${data.courses?.[0]?.content?.split('.')[0]}`)
                 console.log(data.courses?.[0]?.classes?.map(c => c._id) || []);
             } catch (error) {
                 console.error('Error fetching data: ', error);
@@ -94,8 +94,8 @@ export function IndexPreview(props) {
                     setFetchClase(fetchcourse.courses[0].classes);
                     setTextClass(fetchcourse.courses[0].classes[optionsclases].summary);
                     setTitleClass(fetchcourse.courses[0].classes[optionsclases].title)
-                    setFileVideo(`http://localhost:5101/getVideo/${fetchcourse.courses[0].classes[optionsclases].content[0].split('.')[0]}`)
-                    setReadmeClass(`http://localhost:5101/getReadme/${fetchcourse.courses[0].classes[optionsclases].content[1].split('.')[0]}`)
+                    setFileVideo(`http://${serverBackend.HOSTNAME}:${serverBackend.PORT}/getVideo/${fetchcourse.courses[0].classes[optionsclases].content[0].split('.')[0]}`)
+                    setReadmeClass(`http://${serverBackend.HOSTNAME}:${serverBackend.PORT}/getReadme/${fetchcourse.courses[0].classes[optionsclases].content[1].split('.')[0]}`)
                 } catch (error) {
                     console.error(error);
                 }
