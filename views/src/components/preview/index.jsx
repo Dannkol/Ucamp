@@ -4,7 +4,6 @@ import PreviewImg from './preview.png'
 
 import animationFloting from './preview.css'
 
-
 import {
     MenuItem,
     FormControl,
@@ -35,6 +34,7 @@ import axios from 'axios';
 const defaultTheme = createTheme();
 
 import { PreviewCourse } from './previewCourse';
+import { useNavigate } from 'react-router-dom';
 
 const serverBackend = JSON.parse(import.meta.env.VITE_SERVERBACKEND)
 
@@ -61,19 +61,24 @@ export function IndexPreview(props) {
 
     const [optionsclases, setOptionsClases] = useState(0);
 
+    const navigate = useNavigate();
+
+
     useEffect(() => {
         const fetchDatacourse = async () => {
             try {
                 const response = await fetch(`http://${serverBackend.HOSTNAME}:${serverBackend.PORT}/infocourse/${id}`, { withCredentials: true });
                 const data = await response.json();
-                console.log(data);
+                if (response.status !== 200) return navigate('/')
                 setFetchCourse(data);
+                console.log(data);
                 setClase(data.courses?.[0]?.classes?.map(c => c._id) || [])
                 setText(data.courses?.[0]?.summary || '')
                 setTitle(data.courses?.[0]?.title || '')
                 setQuiz(data.courses?.[0]?.quiz?.[0] || '')
                 setSheet(data.courses?.[0]?.quiz?.[1] || '')
-                setReadme(`http://localhost:5101/getReadme/${fetchcourse.courses[0].content.split('.')[0]}`)
+                setReadme(`http://localhost:5101/getReadme/${data.courses?.[0]?.content?.split('.')[0]}`)
+                console.log(data.courses?.[0]?.classes?.map(c => c._id) || []);
             } catch (error) {
                 console.error('Error fetching data: ', error);
             }
@@ -99,10 +104,16 @@ export function IndexPreview(props) {
         };
 
         fetchData();
-    }, [fetchcourse])
+    }, [fetchcourse, optionsclases])
 
 
     const tipo = true;
+
+    const ChangeClass = (id) => {
+        if (tipo) {
+            setOptionsClases(id);
+        }
+    }
 
     const hooksPropsPreviewCourse = {
         clase,
@@ -112,16 +123,16 @@ export function IndexPreview(props) {
         sheet,
         tipo,
         readme,
-        setOptionsClases
+        ChangeClass
     };
 
     const hooksPropsPreviewClass = {
         textclass,
         titleclass,
         filevideo,
-        readme : readmeclass,
+        readme: readmeclass,
         tipo,
-        setOptionsClases
+        ChangeClass
     };
 
     const theme = useTheme();
@@ -154,7 +165,7 @@ export function IndexPreview(props) {
                                     fontSize: '12px',
                                     width: '50px',
                                     height: '50px',
-                                }}> {openPreview ? 'Cerrar' : 'Abrir'} Preview</Button>
+                                }}> {openPreview ? 'Cerrar' : 'Abrir'}</Button>
                         </Box>
                     </Grid>
                 )}
@@ -186,7 +197,7 @@ export function IndexPreview(props) {
 
                         >
 
-                            {<PreviewCourse {...hooksPropsPreviewClass} style={{ height: '100%', width: '100%', display: { xs: 'none', sm: 'block' } }} /> }
+                            {<PreviewCourse {...hooksPropsPreviewClass} style={{ height: '100%', width: '100%', display: { xs: 'none', sm: 'block' } }} />}
                         </Box>
                     </Grid>
                 ) : (

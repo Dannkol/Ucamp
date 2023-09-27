@@ -47,12 +47,14 @@ const getReadme = async (req, res) => {
 const getCourse = async (req, res) => {
     try {
         const data = await getAllCourse(req.params.id);
+        if(!data) throw 'Course not found'
         res.status(200).json(data)
     } catch (error) {
        return res.status(404).json(
-        {
-            massage : 'Archivo no encontrado'
-        });
+            {
+                massage : 'Archivo no encontrado'
+            }
+        );
     }
 };
 

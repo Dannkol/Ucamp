@@ -22,7 +22,8 @@ import {
     CardActions,
     CardContent,
     Avatar,
-    Chip
+    Chip,
+    CircularProgress
 } from '@mui/material';
 
 import axios from 'axios';
@@ -32,9 +33,26 @@ import ReactMarkdown from 'react-markdown';
 const serverBackend = JSON.parse(import.meta.env.VITE_SERVERBACKEND)
 
 
+function areArraysEqual(arr1, arr2) {
+    // Verifica si las longitudes de los arrays son diferentes
+    if (arr1.length !== arr2.length) {
+      return false;
+    }
+  
+    // Compara cada elemento de los arrays
+    for (let i = 0; i < arr1.length; i++) {
+      if (arr1[i] !== arr2[i]) {
+        return false;
+      }
+    }
+  
+    // Si no se encontraron diferencias, los arrays son iguales
+    return true;
+  }
+
 export function PreviewCourse(props) {
 
-    const { title, filevideo, textclass, titleclass, file, curso, clase, readme, text, quiz, sheet, tipo, setOptionsClases } = props;
+    const { title, filevideo, textclass, titleclass, file, curso, clase, readme, text, quiz, sheet, tipo, ChangeClass } = props;
 
     const [shouldHideDiv, setShouldHideDiv] = useState(false);
 
@@ -64,20 +82,20 @@ export function PreviewCourse(props) {
 
     useEffect(() => {
         if (readme) {
-            try {
+            if (!tipo) {
                 const reader = new FileReader();
                 reader.onload = (e) => {
                     setMarkdownContent(e.target.result); // Actualizar el estado con el contenido del archivo Markdown
                 };
                 reader.readAsText(readme);
-            } catch (error) {
+            } else {
                 async function fetchData() {
                     try {
                         const response = await axios.get(readme);
                         const text = response.data;
-                        console.log('readme', text);
                         setMarkdownContent(text);
                     } catch (error) {
+                        console.log('err');
                         console.error('Error al descargar el archivo:', error);
                     }
                 }
@@ -108,9 +126,14 @@ export function PreviewCourse(props) {
                 }
                 ///all/content/clases
                 let data = []
+                console.log(clase);
+                console.log(post);
+
                 if (post.clases !== undefined) {
                     const response = await axios.post(`http://${serverBackend.HOSTNAME}:${serverBackend.PORT}/all/content/clases`, post);
                     data = await response.data;
+                    
+                    if(!(areArraysEqual(data.map(c => c._id), clase))) return setFetchclase(data.reverse())
                 }
                 return setFetchclase(data);
                 // Almacena la respuesta en el estado fethclase
@@ -214,39 +237,46 @@ export function PreviewCourse(props) {
                 }
             >
                 {
-                    fetchclase.map(value => (
-                        <Card sx={{ margin: '12px', display: 'inline-block', width: '275px', maxHeight: 350, borderBottom: '1px solid black', borderLeft: '1px solid black' }} style={stylesText.paper} >
-                            <CardContent>
-                                <Typography variant="h5" style={{ wordWrap: 'break-word' }} component="div">
-                                    {value.classes.title}
-                                </Typography>
-                                <Box
-                                    style={{
-                                        width: 'auto', // Cambié 'auto' a '100%' para ocupar todo el ancho disponible
-                                        maxHeight: '150px', // Establecí una altura máxima para limitar el tamaño de la box
-                                        overflow: 'auto',
-
-                                    }}
-                                >
-                                    <Typography variant="body2" style={{
-                                        fontSize: '18px',
-                                        whiteSpace: 'pre-wrap',
-                                        wordWrap: 'break-word',
-                                    }} color="text.secondary">
-                                        Resumen: {value.classes.summary}  asdasfasdfas d asdfasdf asd fasdfasdfasdf asdf asdf asdf asdf sdafsadfasdasdasdasdasdasdasdasdasdasdadassssssssssssssssssssssssssssssssaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+                    (fetchclase) ?
+                        (fetchclase.map((value, index) => (
+                            <Card sx={{ margin: '12px', display: 'inline-block', width: '275px', maxHeight: 350, borderBottom: '1px solid black', borderLeft: '1px solid black' }} style={stylesText.paper} >
+                                <CardContent>
+                                    <Typography variant="h5" style={{ wordWrap: 'break-word' }} component="div">
+                                        {value.classes.title}
                                     </Typography>
-                                </Box>
-                                <Typography variant="body2" color="text.secondary">
-                                    Fecha de actualización: {new Date(value.classes.update_date).toLocaleDateString()}
-                                </Typography>
-                            </CardContent>
-                            <CardActions>
+                                    <Box
+                                        style={{
+                                            width: 'auto', // Cambié 'auto' a '100%' para ocupar todo el ancho disponible
+                                            maxHeight: '150px', // Establecí una altura máxima para limitar el tamaño de la box
+                                            overflow: 'auto',
 
-                                <Button size="small">Ver</Button>
-                            </CardActions>
-                        </Card>
+                                        }}
+                                    >
+                                        <Typography variant="body2" style={{
+                                            fontSize: '18px',
+                                            whiteSpace: 'pre-wrap',
+                                            wordWrap: 'break-word',
+                                        }} color="text.secondary">
+                                            Resumen: {value.classes.summary}
+                                        </Typography>
+                                    </Box>
+                                    <Typography variant="body2" color="text.secondary">
+                                        Fecha de actualización: {new Date(value.classes.update_date).toLocaleDateString()}
+                                    </Typography>
+                                </CardContent>
+                                <CardActions>
+                                    <Button onClick={() => ChangeClass(index)} size="small">Ver</Button>
+                                </CardActions>
+                            </Card>
 
-                    ))
+                        )))
+                        :
+                        (
+                            <Box sx={{ width: '100%', display: 'flex', justifyContent: 'center', marginBottom: '20px' }}>
+                                <CircularProgress color='inherit' />
+                            </Box>
+                        )
+
                 }
             </Box>
             <Grid item align="center" style={{
@@ -279,12 +309,19 @@ export function PreviewCourse(props) {
 
                 ) : (<Grid />)}
             </Grid >
-            <ReactMarkdown components={
-                {
-                    img: ({ ...props }) => <img {...props} style={markdownStyles.img} />,
-                    pre: ({ ...props }) => <pre {...props} style={markdownStyles.code} />,
-                }
-            }>{markdownContent}</ReactMarkdown>
+            {markdownContent ? (
+                <ReactMarkdown components={
+                    {
+                        img: ({ ...props }) => <img {...props} style={markdownStyles.img} />,
+                        pre: ({ ...props }) => <pre {...props} style={markdownStyles.code} />,
+                    }
+                }>
+                    {markdownContent}
+                </ReactMarkdown>
+            ) :
+                (<Box sx={{ width: '100%', display: 'flex', justifyContent: 'center', marginBottom: '20px' }}>
+                    <CircularProgress color='inherit' />
+                </Box>)}
             <Grid item style={{
                 display: 'flex',
                 justifyContent: 'center',
@@ -301,7 +338,7 @@ export function PreviewCourse(props) {
                     }}
                     href={`/${quiz}`}
                 > Quiz </Button>) : <Box />}
-                {sheet ? (<Button
+                {sheet && !tipo ? (<Button
                     disabled={false}
                     size="small"
                     variant="large"
