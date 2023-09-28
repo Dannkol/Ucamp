@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 
 import PreviewImg from './preview.png'
 
@@ -22,7 +22,8 @@ import {
     CardActions,
     CardContent,
     Avatar,
-    Chip
+    Chip,
+    CircularProgress
 } from '@mui/material';
 
 import axios from 'axios';
@@ -32,49 +33,95 @@ import ReactMarkdown from 'react-markdown';
 const serverBackend = JSON.parse(import.meta.env.VITE_SERVERBACKEND)
 
 
-export function PreviewCourse(props) {
+function areArraysEqual(arr1, arr2) {
+    // Verifica si las longitudes de los arrays son diferentes
+    if (arr1.length !== arr2.length) {
+      return false;
+    }
+  
+    // Compara cada elemento de los arrays
+    for (let i = 0; i < arr1.length; i++) {
+      if (arr1[i] !== arr2[i]) {
+        return false;
+      }
+    }
+  
+    // Si no se encontraron diferencias, los arrays son iguales
+    return true;
+  }
 
-    const { title, file, curso, clase, readme, text, quiz, sheet } = props;
+export function PreviewCourse(props) {
+    const videoRef = useRef(null);
+    const { title, filevideo, textclass, titleclass, file, curso, clase, readme, text, quiz, sheet, tipo, ChangeClass } = props;
 
     const [shouldHideDiv, setShouldHideDiv] = useState(false);
 
     useEffect(() => {
-        if (title || file || clase.length > 0 || clase.length > 0 || readme || text || quiz || sheet) {
+        if (textclass || titleclass || title || file || clase?.length > 0 || clase?.length > 0 || readme || text || quiz || sheet) {
             setShouldHideDiv(true);
         } else {
             setShouldHideDiv(false);
         }
-    }, [title, file, curso, clase, readme, text, quiz, sheet]);
+    }, [title, filevideo,textclass, titleclass, file, curso, clase, readme, text, quiz, sheet]);
 
     const [markdownContent, setMarkdownContent] = useState('');
     const [markdownContentText, setMarkdownContentText] = useState('');
 
     const [videoUrl, setVideoUrl] = useState(null);
-
     useEffect(() => {
         if (file) {
-            const videoURL = URL.createObjectURL(file);
-            setVideoUrl(videoURL);
+          const videoURL = URL.createObjectURL(file);
+          setVideoUrl(videoURL);
+        } else if (filevideo) {
+          console.log(filevideo);
+          setVideoUrl(filevideo);
         }
-    }, [file]);
+    
+
+        if (videoRef.current) {
+          videoRef.current.load();
+        }
+      }, [file, filevideo]);
 
     const [fetchclase, setFetchclase] = useState([])
 
     useEffect(() => {
         if (readme) {
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                setMarkdownContent(e.target.result); // Actualizar el estado con el contenido del archivo Markdown
-            };
-            reader.readAsText(readme);
+            if (!tipo) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    setMarkdownContent(e.target.result); // Actualizar el estado con el contenido del archivo Markdown
+                };
+                reader.readAsText(readme);
+            } else {
+                async function fetchData() {
+                    try {
+                        const response = await axios.get(readme);
+                        const text = response.data;
+                        setMarkdownContent(text);
+                    } catch (error) {
+                        console.log('err');
+                        console.error('Error al descargar el archivo:', error);
+                    }
+                }
+                fetchData();
+            }
         }
     }, [readme]);
+
 
     useEffect(() => {
         if (text) {
             setMarkdownContentText(text); // Establece el contenido de Markdown directamente
         }
     }, [text]);
+
+
+    useEffect(() => {
+        if (textclass) {
+            setMarkdownContentText(textclass); // Establece el contenido de Markdown directamente
+        }
+    }, [textclass]);
 
     useEffect(() => {
         async function fetchData() {
@@ -84,10 +131,10 @@ export function PreviewCourse(props) {
                 }
                 ///all/content/clases
                 let data = []
-                if (post.clases.length > 0) {
-                    const response = await axios.post(`http://${serverBackend.HOSTNAME}:${serverBackend.PORT}/all/content/clases`, post);
+                if (post.clases !== undefined) {
+                    const response = await axios.post(`http://${serverBackend.HOSTNAME}:${serverBackend.PORT}/all/content/clases`, post, { withCredentials: true });
                     data = await response.data;
-                    console.log(data);
+                    if(!(areArraysEqual(data.map(c => c._id), clase))) return setFetchclase(data.reverse())
                 }
                 return setFetchclase(data);
                 // Almacena la respuesta en el estado fethclase
@@ -135,11 +182,19 @@ export function PreviewCourse(props) {
         },
     };
 
+    const handleChangeOptionsClases = (options) => {
+        setOptionsClases(options);
+    }
+
     return (
 
         <div style={markdownContainerStyles}>
-            <h2>Vista previa</h2>
-            <hr></hr>
+            {(!tipo) && (
+                <Grid>
+                    <h2>Vista previa</h2>
+                    <hr></hr>
+                </Grid>
+            )}
             {shouldHideDiv ? null : (
                 <Grid item align="center">
                     <Avatar alt="Preview" sx={{ width: '80%', height: 'auto' }} className="floating-image" src={PreviewImg} />
@@ -148,7 +203,7 @@ export function PreviewCourse(props) {
             <Grid item align="center">
                 <Paper style={stylesText.paper} elevation={3} xs={12} >
                     <Typography style={stylesText.text}>
-                        {title}
+                        {title ? title : titleclass}
                     </Typography>
                 </Paper>
             </Grid>
@@ -156,6 +211,7 @@ export function PreviewCourse(props) {
                 <Box>
                     {videoUrl && (
                         <video
+                            ref={videoRef}
                             style={{
                                 width: '100%',
                                 height: 'auto',
@@ -168,7 +224,7 @@ export function PreviewCourse(props) {
                             <source src={videoUrl} type="video/mp4" />
                             Tu navegador no admite la reproducción de videos.
                         </video>
-                    ) }
+                    )}
                 </Box>
             </Grid>
             <Box
@@ -183,44 +239,52 @@ export function PreviewCourse(props) {
                 }
             >
                 {
-                    fetchclase.map(value => (
-                        <Card sx={{ margin: '12px' ,display : 'inline-block' , width: '275px', maxHeight: 350 , borderBottom : '1px solid black', borderLeft : '1px solid black'}} style={stylesText.paper} >
-                            <CardContent>
-                                <Typography variant="h5" style={{ wordWrap: 'break-word' }} component="div">
-                                    {value.classes.title}
-                                </Typography>
-                                <Box
-                                    style={{
-                                        width: 'auto', // Cambié 'auto' a '100%' para ocupar todo el ancho disponible
-                                        maxHeight: '150px', // Establecí una altura máxima para limitar el tamaño de la box
-                                        overflow: 'auto',
-
-                                    }}
-                                >
-                                    <Typography variant="body2" style={{
-                                        fontSize: '18px',
-                                        whiteSpace: 'pre-wrap',
-                                        wordWrap: 'break-word',
-                                    }} color="text.secondary">
-                                        Resumen: {value.classes.summary}  asdasfasdfas d asdfasdf asd fasdfasdfasdf asdf asdf asdf asdf sdafsadfasdasdasdasdasdasdasdasdasdasdadassssssssssssssssssssssssssssssssaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+                    (fetchclase) ?
+                        (fetchclase.map((value, index) => (
+                            <Card sx={{ margin: '12px', display: 'inline-block', width: '275px', maxHeight: 350, borderBottom: '1px solid black', borderLeft: '1px solid black' }} style={stylesText.paper} >
+                                <CardContent>
+                                    <Typography variant="h5" style={{ wordWrap: 'break-word' }} component="div">
+                                        {value.classes.title}
                                     </Typography>
-                                </Box>
-                            </CardContent>
-                            <CardActions>
-                                <Typography variant="body2" color="text.secondary">
-                                    Fecha de actualización: {new Date(value.classes.update_date).toLocaleDateString()}
-                                </Typography>
-                                <Button size="small">Learn More</Button>
-                            </CardActions>
-                        </Card>
+                                    <Box
+                                        style={{
+                                            width: 'auto', // Cambié 'auto' a '100%' para ocupar todo el ancho disponible
+                                            maxHeight: '150px', // Establecí una altura máxima para limitar el tamaño de la box
+                                            overflow: 'auto',
 
-                    ))
+                                        }}
+                                    >
+                                        <Typography variant="body2" style={{
+                                            fontSize: '18px',
+                                            whiteSpace: 'pre-wrap',
+                                            wordWrap: 'break-word',
+                                        }} color="text.secondary">
+                                            Resumen: {value.classes.summary}
+                                        </Typography>
+                                    </Box>
+                                    <Typography variant="body2" color="text.secondary">
+                                        Fecha de actualización: {new Date(value.classes.update_date).toLocaleDateString()}
+                                    </Typography>
+                                </CardContent>
+                                <CardActions>
+                                    <Button onClick={() => ChangeClass(index)} size="small">Ver</Button>
+                                </CardActions>
+                            </Card>
+
+                        )))
+                        :
+                        (
+                            <Box sx={{ width: '100%', display: 'flex', justifyContent: 'center', marginBottom: '20px' }}>
+                                <CircularProgress color='inherit' />
+                            </Box>
+                        )
+
                 }
             </Box>
             <Grid item align="center" style={{
                 marginBottom: 12
             }}>
-                {text ? (
+                {text || textclass ? (
                     <Grid>
                         <Typography variant='h5' sx={{
                             textAlign: 'start',
@@ -247,12 +311,19 @@ export function PreviewCourse(props) {
 
                 ) : (<Grid />)}
             </Grid >
-            <ReactMarkdown components={
-                {
-                    img: ({ ...props }) => <img {...props} style={markdownStyles.img} />,
-                    pre: ({ ...props }) => <pre {...props} style={markdownStyles.code} />,
-                }
-            }>{markdownContent}</ReactMarkdown>
+            {markdownContent ? (
+                <ReactMarkdown components={
+                    {
+                        img: ({ ...props }) => <img {...props} style={markdownStyles.img} />,
+                        pre: ({ ...props }) => <pre {...props} style={markdownStyles.code} />,
+                    }
+                }>
+                    {markdownContent}
+                </ReactMarkdown>
+            ) :
+                (<Box sx={{ width: '100%', display: 'flex', justifyContent: 'center', marginBottom: '20px' }}>
+                    <CircularProgress color='inherit' />
+                </Box>)}
             <Grid item style={{
                 display: 'flex',
                 justifyContent: 'center',
@@ -269,7 +340,7 @@ export function PreviewCourse(props) {
                     }}
                     href={`/${quiz}`}
                 > Quiz </Button>) : <Box />}
-                {sheet ? (<Button
+                {sheet && !tipo ? (<Button
                     disabled={false}
                     size="small"
                     variant="large"

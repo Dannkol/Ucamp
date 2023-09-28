@@ -27,13 +27,13 @@ const getCoursesName = async () => {
 
         // Iteramos sobre el array de entrada
         result.forEach((item) => {
-          // Si ambos campos id y curso no están vacíos
-          if (item.id.length > 0 && item.curso.length > 0) {
-            // Iteramos sobre los elementos en los campos id y curso y creamos un nuevo objeto para cada par
-            item.id.forEach((id, index) => {
-              transformedArray.push({ id: id.toString(), curso: item.curso[index] });
-            });
-          }
+            // Si ambos campos id y curso no están vacíos
+            if (item.id.length > 0 && item.curso.length > 0) {
+                // Iteramos sobre los elementos en los campos id y curso y creamos un nuevo objeto para cada par
+                item.id.forEach((id, index) => {
+                    transformedArray.push({ id: id.toString(), curso: item.curso[index] });
+                });
+            }
         });
         return transformedArray
 
@@ -131,13 +131,15 @@ const getAllClasesByIds = async (data) => {
     }
 }
 
-const createNewCourse = async (data) => {
+const createNewCourse = async (data, iduser) => {
     const client = await mongoConn();
     try {
         const db = getDB("uCamp_db")
         const users = await db.collection('users')
 
-        const query = { identifier: "fasdfwsfew5343123oj3254" }
+        console.log(iduser);
+
+        const query = { identifier: iduser }
 
 
         const pipeline = {
@@ -158,4 +160,75 @@ const createNewCourse = async (data) => {
     }
 }
 
-export { getCoursesName, getClasesName, getAllClasesByIds, createNewCourse }
+const createNewClase = async (data) => {
+    const client = await mongoConn();
+    try {
+        const db = getDB("uCamp_db")
+        const users = await db.collection('users')
+
+        const query = { "courses._id": new ObjectId(data.curso) }
+
+
+        const clase = {
+            _id: data._id,
+            title: data.title,
+            summary: data.summary,
+            content: [
+                data.content[0],
+                data.content[1]
+            ],
+            update_date: data.update_date
+        }
+
+        const pipeline = {
+            $addToSet: {
+                "courses.$.classes": clase
+            }
+        }
+
+        const result = await users.updateOne(query, pipeline);
+
+        return result
+
+    } catch (error) {
+        /* console.error(JSON.stringify(error.errInfo, null, 2)); */
+        throw error;
+    } finally {
+        await client.close();
+    }
+}
+
+const getAllCourse = async (data) => {
+    const client = await mongoConn();
+    try {
+        const db = getDB("uCamp_db")
+        const users = await db.collection('users')
+
+
+        const results = await users.findOne(
+            {
+              "courses": {
+                $elemMatch: {
+                  "_id": new ObjectId(data)
+                }
+              }
+            },
+            {
+              projection: {
+                "_id": 0,
+                "courses.$": 1 
+              }
+            }
+          );
+
+        return results
+
+    } catch (error) {
+        throw error;
+    } finally {
+        await client.close();
+    }
+}
+
+
+export { getCoursesName, getClasesName, getAllClasesByIds, createNewCourse, createNewClase, getAllCourse }

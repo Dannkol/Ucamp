@@ -178,12 +178,14 @@ let idCourselist = db.getCollection("users").findOne(
     }
 )._id.map(id => id._id.toString())
 
+use('uCamp_db');
+
 db.getCollection("users").findOne(
     {
-        "courses._id": { $in: idCourselist.map(id => new ObjectId(id)) }
+        "courses._id": ObjectId('6511fbf16803f429fdd18f73'),
     },
     {
         "_id": 0,
-        "mylist": "$courses"
+        "courses" : 1
     }
 )

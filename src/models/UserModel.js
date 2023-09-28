@@ -25,7 +25,7 @@ const findUser = async (user) => {
         return result
 
     } catch (error) {
-        console.error(error);
+        return
     }finally{
         await client.close();
     }
@@ -33,7 +33,6 @@ const findUser = async (user) => {
 
 const NewUser = async (user) => {
     const client = await mongoConn();
-    console.log('gg');
     try {
         const db = getDB("uCamp_db")
         const users = await db.collection('users')
@@ -55,7 +54,7 @@ const NewUser = async (user) => {
         return result
 
     } catch (error) {
-        console.error(error);
+        return
     }finally{
         await client.close();
     }

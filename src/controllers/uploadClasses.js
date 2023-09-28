@@ -3,7 +3,7 @@ import path from 'path';
 import fs from 'fs/promises';
 import { deletAny } from '../models/DelateFiled.js';
 
-import { getAllClasesByIds, createNewCourse } from '../models/Curso.Model.js';
+import { getAllClasesByIds, createNewCourse, createNewClase } from '../models/Curso.Model.js';
 
 let linksToDelete = [];
 
@@ -23,12 +23,12 @@ const CreatPath = async (req) => {
       switch (key) {
         case 'file':
           pathVideo = req.files.file.map(e => {
-            if (e.mimetype === 'video/mp4') return `..${req.path}/${e.filename}`;
+            if (e.mimetype === 'video/mp4') return `${e.filename}`;
           });
           break;
         case 'readme':
           pathReadme = req.files.readme.map(e => {
-            if (e.mimetype === 'text/markdown') return `..${req.path}/${e.filename}`;
+            if (e.mimetype === 'text/markdown') return `${e.filename}`;
           });
           break;
 
@@ -60,14 +60,15 @@ const uploadclass = async (req, res) => {
         summary: req.body.resumen,
         quiz: JSON.parse(req.body.quiz),
         content: path.pathReadme[0],
-        update_date: 'sadasdas',
+        update_date: new Date(),
       };
 
-      await createNewCourse(data)
+      if(!(req.user.identificador)) throw 'Usuario no existe'
+
+      await createNewCourse(data, req.user.identificador)
 
       res.status(200).send('Archivo subido correctamente.');
     } catch (error) {
-      console.log(error);
       for (let item in req.files) {
         req.files[item].forEach((value) => {
           linksToDelete.push(value.path);
@@ -101,12 +102,12 @@ const uploadclass = async (req, res) => {
         update_date: new Date(),
       };
 
-      await createNewCourse(data)
+      if(!(req.user.identificador)) throw 'Usuario no existe'
+
+      await createNewClase(data)
 
       res.status(200).send('Archivo subido correctamente.');
     } catch (error) {
-      console.log(error);
-
       for (let item in req.files) {
         req.files[item].forEach((value) => {
           linksToDelete.push(value.path);
@@ -128,5 +129,8 @@ const uploadclass = async (req, res) => {
   }
 
 };
+
+
+
 
 export { uploadclass };

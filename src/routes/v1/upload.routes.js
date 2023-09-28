@@ -8,6 +8,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 import { uploadclass} from '../../controllers/uploadClasses.js';
 
 import { getCoursesNameId , getClasesNameId, getClasescontent} from '../../controllers/cursos.Controller.js';
+import { ensureAuthenticated } from '../../middleware/ensureAuthenticated.middleware.js';
 
 const uploads = Router();
 
@@ -31,13 +32,13 @@ uploads.post('/upload', upload.fields([
   {
     name : 'readme'
   }
-]), uploadclass);
+]), ensureAuthenticated, uploadclass);
 
-uploads.get('/all/courses', getCoursesNameId)
+uploads.get('/all/courses', ensureAuthenticated, getCoursesNameId)
 
-uploads.get('/all/clases', getClasesNameId)
+uploads.get('/all/clases', ensureAuthenticated, getClasesNameId)
 
-uploads.post('/all/content/clases', getClasescontent )
+uploads.post('/all/content/clases', ensureAuthenticated, getClasescontent )
 
 
 export { uploads }
