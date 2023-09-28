@@ -63,7 +63,9 @@ const uploadclass = async (req, res) => {
         update_date: new Date(),
       };
 
-      await createNewCourse(data)
+      if(!(req.user.identificador)) throw 'Usuario no existe'
+
+      await createNewCourse(data, req.user.identificador)
 
       res.status(200).send('Archivo subido correctamente.');
     } catch (error) {
@@ -99,6 +101,8 @@ const uploadclass = async (req, res) => {
         content: [path.pathVideo[0], path.pathReadme[0]],
         update_date: new Date(),
       };
+
+      if(!(req.user.identificador)) throw 'Usuario no existe'
 
       await createNewClase(data)
 

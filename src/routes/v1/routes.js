@@ -24,7 +24,7 @@ Router_Init.get('/ok', ensureAuthenticated, (req, res) => {
     </html>`);
 });
 
-Router_Init.get('/dashboard', ensureAuthenticated, (req, res) => {
+Router_Init.get('/me', ensureAuthenticated, (req, res) => {
     // Aquí puedes manejar las acciones que deseas realizar en la ruta protegida
     
     res.status(200).json({

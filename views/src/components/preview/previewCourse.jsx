@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 
 import PreviewImg from './preview.png'
 
@@ -51,7 +51,7 @@ function areArraysEqual(arr1, arr2) {
   }
 
 export function PreviewCourse(props) {
-
+    const videoRef = useRef(null);
     const { title, filevideo, textclass, titleclass, file, curso, clase, readme, text, quiz, sheet, tipo, ChangeClass } = props;
 
     const [shouldHideDiv, setShouldHideDiv] = useState(false);
@@ -62,21 +62,26 @@ export function PreviewCourse(props) {
         } else {
             setShouldHideDiv(false);
         }
-    }, [title, textclass, titleclass, file, curso, clase, readme, text, quiz, sheet]);
+    }, [title, filevideo,textclass, titleclass, file, curso, clase, readme, text, quiz, sheet]);
 
     const [markdownContent, setMarkdownContent] = useState('');
     const [markdownContentText, setMarkdownContentText] = useState('');
 
     const [videoUrl, setVideoUrl] = useState(null);
-
     useEffect(() => {
         if (file) {
-            const videoURL = URL.createObjectURL(file);
-            setVideoUrl(videoURL);
+          const videoURL = URL.createObjectURL(file);
+          setVideoUrl(videoURL);
         } else if (filevideo) {
-            setVideoUrl(filevideo);
+          console.log(filevideo);
+          setVideoUrl(filevideo);
         }
-    }, [file, filevideo]);
+    
+
+        if (videoRef.current) {
+          videoRef.current.load();
+        }
+      }, [file, filevideo]);
 
     const [fetchclase, setFetchclase] = useState([])
 
@@ -126,13 +131,9 @@ export function PreviewCourse(props) {
                 }
                 ///all/content/clases
                 let data = []
-                console.log(clase);
-                console.log(post);
-
                 if (post.clases !== undefined) {
-                    const response = await axios.post(`http://${serverBackend.HOSTNAME}:${serverBackend.PORT}/all/content/clases`, post);
+                    const response = await axios.post(`http://${serverBackend.HOSTNAME}:${serverBackend.PORT}/all/content/clases`, post, { withCredentials: true });
                     data = await response.data;
-                    
                     if(!(areArraysEqual(data.map(c => c._id), clase))) return setFetchclase(data.reverse())
                 }
                 return setFetchclase(data);
@@ -210,6 +211,7 @@ export function PreviewCourse(props) {
                 <Box>
                     {videoUrl && (
                         <video
+                            ref={videoRef}
                             style={{
                                 width: '100%',
                                 height: 'auto',

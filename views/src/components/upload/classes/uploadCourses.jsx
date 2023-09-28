@@ -14,7 +14,8 @@ import {
   Box,
   OutlinedInput,
   Chip,
-  useMediaQuery
+  useMediaQuery,
+  Alert
 } from '@mui/material';
 import CssBaseline from '@mui/material/CssBaseline';
 
@@ -31,6 +32,7 @@ import { PreviewCourse } from '../../preview/previewCourse'
 import '../../../fonts.css';
 
 import Waves from '../../effects/waves.svg';
+import { useNavigate } from 'react-router-dom';
 
 const serverBackend = JSON.parse(import.meta.env.VITE_SERVERBACKEND)
 
@@ -85,6 +87,27 @@ const stylesText = {
 };
 
 const FileUpload = ({ typeUpdload }) => {
+  const navigate = useNavigate();
+
+  const [showalert, setShowAlert] = useState(false)
+
+  const [user, setUser] = useState(false);
+
+  const serverBackend = JSON.parse(import.meta.env.VITE_SERVERBACKEND)
+
+  useEffect(() => {
+    // Realizamos la solicitud Axios dentro de useEffect
+    axios.get(`http://${serverBackend.HOSTNAME}:${serverBackend.PORT}/me`, { withCredentials: true })
+      .then(response => {
+        // Cuando la solicitud es exitosa, actualizamos el estado con los datos recibidos
+        setUser(response.data.message);
+      })
+      .catch(error => {
+        navigate('/login')
+        // Manejar errores aquí si es necesario
+        console.error(error);
+      });
+  }, []);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const [clase, setClase] = useState([]);
@@ -118,8 +141,8 @@ const FileUpload = ({ typeUpdload }) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch(`http://${serverBackend.HOSTNAME}:${serverBackend.PORT}/all/courses`, { withCredentials: true });
-        const data = await response.json();
+        const response = await axios(`http://${serverBackend.HOSTNAME}:${serverBackend.PORT}/all/courses`, { withCredentials: true });
+        const data = await response.data;
         setOptionsCursos(data);
       } catch (error) {
         console.error('Error fetching data: ', error);
@@ -132,8 +155,8 @@ const FileUpload = ({ typeUpdload }) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch(`http://${serverBackend.HOSTNAME}:${serverBackend.PORT}/all/clases`, { withCredentials: true });
-        const data = await response.json();
+        const response = await axios(`http://${serverBackend.HOSTNAME}:${serverBackend.PORT}/all/clases`, { withCredentials: true });
+        const data = await response.data;
         setOptionsClases(data);
       } catch (error) {
         console.error('Error fetching data: ', error);
@@ -257,18 +280,46 @@ const FileUpload = ({ typeUpdload }) => {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
-      }, { withCredentials: true });
-      alert('Se creó la clase exitosamente.');
+        withCredentials: true
+      });
+      setShowAlert(true)
     } catch (error) {
       console.error('Error al subir el archivo y el texto:', error);
       alert('La clase no se ha podido crear.');
     }
   };
 
+  const AnswerAlert = (answer) => {
+    if (answer) {
+      window.location.href = typeUpdload ? '/formulario/clases' : '/formulario/cursos';
+    }
+  }
 
 
   return (
     <ThemeProvider theme={defaultTheme}>
+      {
+        showalert && (
+          <Alert
+            action={
+              <Box item style={{
+                display: 'flex',
+                justifyContent: 'center',
+                gap: '20px'
+              }}>
+                <Button onClick={() => {AnswerAlert(true)}} variant="contained" color="inherit" size="small">
+                  si
+                </Button>
+                <Button onClick={() => {AnswerAlert(false)}} variant="contained" color="inherit" size="small">
+                  no
+                </Button>
+              </Box>
+            }
+          >
+            {`Se creó la ${typeUpdload ? 'curso' : 'clase'} exitosamente. deseas crear ${typeUpdload ? 'una clase' : 'un curso'}?`}
+          </Alert>
+        )
+      }
       <Grid container component="main" >
         <CssBaseline />
         {isMobile && (

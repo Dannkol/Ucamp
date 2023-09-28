@@ -4,6 +4,8 @@ import PreviewImg from './preview.png'
 
 import animationFloting from './preview.css'
 
+import { Footer } from '../footer/footer';
+
 import {
     MenuItem,
     FormControl,
@@ -42,19 +44,36 @@ export function IndexPreview(props) {
     const queryParameters = new URLSearchParams(window.location.search)
     const id = queryParameters.get("id")
 
+
+    const [user, setUser] = useState(false);
+
+    useEffect(() => {
+      // Realizamos la solicitud Axios dentro de useEffect
+      axios.get(`http://${serverBackend.HOSTNAME}:${serverBackend.PORT}/me`, { withCredentials: true })
+        .then(response => {
+          // Cuando la solicitud es exitosa, actualizamos el estado con los datos recibidos
+          setUser(response.data.message);
+        })
+        .catch(error => {
+          navigate('/login')
+          // Manejar errores aquí si es necesario
+          console.error(error);
+        });
+    }, []);
+
     /* Props */
 
     const [fetchcourse, setFetchCourse] = useState([])
     const [fetchclase, setFetchClase] = useState([])
 
     const [clase, setClase] = useState([]);
-    const [readme, setReadme] = useState(null);
+    const [readme, setReadme] = useState('');
     const [readmeclass, setReadmeClass] = useState(null);
     const [filevideo, setFileVideo] = useState(null);
     const [text, setText] = useState(null);
     const [title, setTitle] = useState(null);
-    const [textclass, setTextClass] = useState(null);
-    const [titleclass, setTitleClass] = useState(null);
+    const [textclass, setTextClass] = useState('');
+    const [titleclass, setTitleClass] = useState('');
     const [curso, setCurso] = useState([]);
     const [quiz, setQuiz] = useState(null);
     const [sheet, setSheet] = useState(null);
@@ -67,20 +86,19 @@ export function IndexPreview(props) {
     useEffect(() => {
         const fetchDatacourse = async () => {
             try {
-                const response = await fetch(`http://${serverBackend.HOSTNAME}:${serverBackend.PORT}/infocourse/${id}`, { withCredentials: true });
-                const data = await response.json();
+                const response = await axios(`http://${serverBackend.HOSTNAME}:${serverBackend.PORT}/infocourse/${id}`, { withCredentials: true });
+                const data = await response.data;
                 if (response.status !== 200) return navigate('/')
                 setFetchCourse(data);
-                console.log(data);
                 setClase(data.courses?.[0]?.classes?.map(c => c._id) || [])
                 setText(data.courses?.[0]?.summary || '')
                 setTitle(data.courses?.[0]?.title || '')
                 setQuiz(data.courses?.[0]?.quiz?.[0] || '')
                 setSheet(data.courses?.[0]?.quiz?.[1] || '')
                 setReadme(`http://${serverBackend.HOSTNAME}:${serverBackend.PORT}/getReadme/${data.courses?.[0]?.content?.split('.')[0]}`)
-                console.log(data.courses?.[0]?.classes?.map(c => c._id) || []);
             } catch (error) {
                 console.error('Error fetching data: ', error);
+                navigate('/')
             }
         };
 
@@ -232,6 +250,9 @@ export function IndexPreview(props) {
                             {<PreviewCourse {...hooksPropsPreviewCourse} style={{ height: '100%', width: '100%', display: { xs: 'none', sm: 'block' } }} />}
                         </Box>
                     </Grid>}
+                <Grid item xs={12} >
+                    <Footer sx={{ mt: 0.2 }} />
+                </Grid>
             </Grid>
         </ThemeProvider>
     )

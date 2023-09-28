@@ -16,7 +16,7 @@ import axios from 'axios';
 export default function Layout({ children }) {
     const navigate = useNavigate()
     const theme = useTheme()
-    const isMobile = useMediaQuery(theme.breakpoints.down("xs"));
+    const isMobile = useMediaQuery(theme.breakpoints.down("md"));
     const location = useLocation();
 
     // Verificar si la ubicación actual es "/login"
@@ -50,7 +50,9 @@ export default function Layout({ children }) {
 
                         <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
                             {isMobile ? (
+
                                 <DrawerComponent />
+
                             ) : (
                                 <Box
                                     component="div"

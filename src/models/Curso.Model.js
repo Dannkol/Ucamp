@@ -131,13 +131,15 @@ const getAllClasesByIds = async (data) => {
     }
 }
 
-const createNewCourse = async (data) => {
+const createNewCourse = async (data, iduser) => {
     const client = await mongoConn();
     try {
         const db = getDB("uCamp_db")
         const users = await db.collection('users')
 
-        const query = { identifier: "fasdfwsfew5343123oj3254" }
+        console.log(iduser);
+
+        const query = { identifier: iduser }
 
 
         const pipeline = {
@@ -203,8 +205,6 @@ const getAllCourse = async (data) => {
         const users = await db.collection('users')
 
 
-        console.log(data);
-
         const results = await users.findOne(
             {
               "courses": {
@@ -220,7 +220,6 @@ const getAllCourse = async (data) => {
               }
             }
           );
-        console.log(results);
 
         return results
 
