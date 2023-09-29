@@ -198,7 +198,7 @@ const createNewClase = async (data) => {
     }
 }
 
-const getAllCourse = async (data) => {
+const getAllCourseByid = async (data) => {
     const client = await mongoConn();
     try {
         const db = getDB("uCamp_db")
@@ -231,4 +231,31 @@ const getAllCourse = async (data) => {
 }
 
 
-export { getCoursesName, getClasesName, getAllClasesByIds, createNewCourse, createNewClase, getAllCourse }
+const getAllCourse = async () => {
+    const client = await mongoConn();
+    try {
+        const db = getDB("uCamp_db")
+        const users = await db.collection('users')
+
+
+        const results = await users.find(
+            {},
+            {
+              projection: {
+                "_id": 0,
+                "courses": 1 
+              }
+            }
+          ).toArray();
+
+        return results
+
+    } catch (error) {
+        throw error;
+    } finally {
+        await client.close();
+    }
+}
+
+
+export { getAllCourse, getCoursesName, getClasesName, getAllClasesByIds, createNewCourse, createNewClase, getAllCourseByid }

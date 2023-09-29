@@ -12,8 +12,8 @@ const Router_Init = Router();
 const SERVER_FRONT = JSON.parse(process.env.SERVER_FRONT)
 
 Router_Init.get('/ok', ensureAuthenticated, (req, res) => {
-    // Aquí puedes manejar las acciones que deseas realizar en la ruta protegida
-    res.send(`<!DOCTYPE html>
+  // Aquí puedes manejar las acciones que deseas realizar en la ruta protegida
+  res.send(`<!DOCTYPE html>
     <html lang="en">
       <body>
       </body>
@@ -25,11 +25,11 @@ Router_Init.get('/ok', ensureAuthenticated, (req, res) => {
 });
 
 Router_Init.get('/me', ensureAuthenticated, (req, res) => {
-    // Aquí puedes manejar las acciones que deseas realizar en la ruta protegida
-    
-    res.status(200).json({
-        message : req.user.username
-    })
+  // Aquí puedes manejar las acciones que deseas realizar en la ruta protegida
+
+  res.status(200).json({
+    message: 'ok'
+  })
 });
 
 export { Router_Init }

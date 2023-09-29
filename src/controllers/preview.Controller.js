@@ -1,5 +1,5 @@
 
-import { getAllCourse } from '../models/Curso.Model.js';
+import { getAllCourseByid } from '../models/Curso.Model.js';
 
 import { fileURLToPath } from 'url';
 import fs from 'fs/promises';
@@ -94,7 +94,7 @@ const getReadme = async (req, res) => {
 
 const getCourse = async (req, res) => {
     try {
-        const data = await getAllCourse(req.params.id);
+        const data = await getAllCourseByid(req.params.id);
         if (!data) throw 'Course not found'
         res.status(200).json(data)
     } catch (error) {

@@ -21,6 +21,10 @@ import { uploads } from './src/routes/v1/upload.routes.js';
 /* ROUTES PREVIEW */
 import { preview } from './src/routes/v1/getPreview.routes.js';
 
+/* ROUTES DASHBOARD */
+
+import { IndexDashboard } from './src/routes/v1/indexdashboard.routes.js';
+
 dotenv.config();
 const SERVER = JSON.parse(process.env.SERVER)
 
@@ -41,6 +45,8 @@ app.use(Router_Auth)
 app.use(Router_Init)
 app.use(uploads)
 app.use(preview)
+app.use(IndexDashboard)
+
 
 
 
