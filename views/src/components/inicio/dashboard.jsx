@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
+import UserProfile from "../about/aboutmi";
+
 import {
     Grid,
     LinearProgress,
@@ -13,8 +15,12 @@ import {
     CardActions,
     Button,
     ThemeProvider,
-    createTheme
+    createTheme,
+    CircularProgress,
+    Paper
 } from '@mui/material'
+
+import Accordeon from '../inicio/accordion';
 
 
 const defaultTheme = createTheme();
@@ -35,99 +41,168 @@ const stylesText = {
 };
 
 export default function Dashboard() {
+
+
     const navigate = useNavigate();
 
-    const [user, setUser] = useState(false);
+    const [user, setUser] = useState([]);
+    const [userinfo, setUserInfo] = useState({});
+    const [cursosinfo, setCursosInfo] = useState({});
+
+
+    const [login, setLogin] = useState(false);
 
     const serverBackend = JSON.parse(import.meta.env.VITE_SERVERBACKEND)
 
+
+
     useEffect(() => {
-        // Realizamos la solicitud Axios dentro de useEffect
         axios.get(`http://${serverBackend.HOSTNAME}:${serverBackend.PORT}/me`, { withCredentials: true })
             .then(response => {
-                // Cuando la solicitud es exitosa, actualizamos el estado con los datos recibidos
-                setUser(response.data.message);
+                setLogin(response.data.message);
             })
             .catch(error => {
                 navigate('/login')
-                // Manejar errores aquí si es necesario
-                console.error(error);
             });
     }, []);
 
+    useEffect(() => {
+        async function fetchData() {
+
+            try {
+                const response = await axios.get(`http://${serverBackend.HOSTNAME}:${serverBackend.PORT}/dashboard/info/user`, { withCredentials: true })
+                const data = await response.data.message
+                return setUser(data);
+            } catch (error) {
+                navigate('/login')
+            }
+
+        }
+        fetchData()
+    }, []);
+
+    useEffect(() => {
+        setUserInfo({
+            id: user.id,
+            username: user.username,
+            email: user.email,
+            rol: user.rol,
+            points: user.points
+        })
+    }, [user])
+
+
+    useEffect(() => {
+        const misCursos = []
+
+        const learning = []
+
+        user.courses.forEach(element => {
+            misCursos.push(
+                {
+                    title: element.title,
+                    summary: element.summary
+                }
+            )
+        });
+
+        user.courses.forEach(element => {
+            learning.push(
+                {
+                    title: element.title,
+                    summary: element.summary
+                }
+            )
+        });
+
+
+
+        const data = [
+            {
+                title: 'Cursos Generales', cards: [{
+                    title: 'Cursos de la comunidad 1',
+                    summary: 'Cursos de la comunidad lorem inpusdasdasdasdasd'
+                }, {
+                    title: 'Cursos de la comunidad 2',
+                    summary: 'Cursos de la comunidad lorem inpusdasdasdasdasd'
+                }, {
+                    title: 'Cursos de la comunidad 3',
+                    summary: 'Cursos de la comunidad lorem inpusdasdasdasdasd'
+                }, {
+                    title: 'Cursos de la comunidad 4',
+                    summary: 'Cursos de la comunidad lorem inpusdasdasdasdasd'
+                }]
+            },
+            {
+                title: 'Cursos de la comunidad', cards: [{
+                    title: 'Cursos de la comunidad 1',
+                    summary: 'Cursos de la comunidad lorem inpusdasdasdasdasd'
+                }, {
+                    title: 'Cursos de la comunidad',
+                    summary: 'Cursos de la comunidad lorem inpusdasdasdasdasd'
+                }]
+            },
+            {
+                title: 'Mi lista', cards: learning
+            },
+            {
+                title: 'Mis cursos', cards: misCursos
+            },
+        ];
+    }, [user]);
+
+
+
     return (
         <ThemeProvider theme={defaultTheme}>
-            {user ? ( // Verificamos si user tiene datos antes de mostrarlos
-                <Grid container style={{
-                    display: 'flex',
-                    flexDirection: 'row',
-                    justifyContent: 'between',
-                    alignItems: 'start',
-                    gap: '12px'
-                }}
-
+            {login ? ( // Verificamos si user tiene datos antes de mostrarlos
+                <Grid container
                 >
-                    <Box item>
-                        <Card sx={{ margin : '12px', display: 'inline-block', width: '275px', maxHeight: 350, borderBottom: '1px solid black', borderLeft: '1px solid black' }} style={stylesText.paper} >
-                            <CardContent>
-                                <Typography variant="h5" style={{ wordWrap: 'break-word' }} component="div">
-                                    Title
-                                </Typography>
-                                <Box
-                                    style={{
-                                        width: 'auto', // Cambié 'auto' a '100%' para ocupar todo el ancho disponible
-                                        maxHeight: '150px', // Establecí una altura máxima para limitar el tamaño de la box
-                                        overflow: 'auto',
+                    <Box item style={{
+                        display: 'flex',
+                        flexDirection: 'row',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        gap: '12px',
+                        flexWrap: 'wrap',
 
-                                    }}
-                                >
-                                    <Typography variant="body2" style={{
-                                        fontSize: '18px',
-                                        whiteSpace: 'pre-wrap',
-                                        wordWrap: 'break-word',
-                                    }} color="text.secondary">
-                                        Resumen:
-                                    </Typography>
+                    }}>
+                        {
+                            userinfo.id !== undefined && (
+                                <Box>
+                                    <UserProfile user={userinfo} />
+                                    <Accordeon data={[]} />
                                 </Box>
-                                <Typography variant="body2" color="text.secondary">
-                                    Fecha de actualización:
-                                </Typography>
-                            </CardContent>
-                            <CardActions>
-                                <Button onClick={() => console.log('click')} size="small">Ver</Button>
-                            </CardActions>
-                        </Card>
-                    </Box>
-                    <Box item>
-                        <Card sx={{ margin: '12px', display: 'inline-block', width: '275px', maxHeight: 350, borderBottom: '1px solid black', borderLeft: '1px solid black' }} style={stylesText.paper} >
-                            <CardContent>
-                                <Typography variant="h5" style={{ wordWrap: 'break-word' }} component="div">
-                                    Title
-                                </Typography>
-                                <Box
-                                    style={{
-                                        width: 'auto', // Cambié 'auto' a '100%' para ocupar todo el ancho disponible
-                                        maxHeight: '150px', // Establecí una altura máxima para limitar el tamaño de la box
-                                        overflow: 'auto',
 
-                                    }}
-                                >
-                                    <Typography variant="body2" style={{
-                                        fontSize: '18px',
-                                        whiteSpace: 'pre-wrap',
-                                        wordWrap: 'break-word',
-                                    }} color="text.secondary">
-                                        Resumen:
-                                    </Typography>
-                                </Box>
-                                <Typography variant="body2" color="text.secondary">
-                                    Fecha de actualización:
-                                </Typography>
-                            </CardContent>
-                            <CardActions>
-                                <Button onClick={() => console.log('click')} size="small">Ver</Button>
-                            </CardActions>
-                        </Card>
+                            )
+                        }
+
+                        {
+                            userinfo.id == undefined && (
+
+
+                                <Grid container component="main" style={{
+                                    display: 'flex',
+                                    justifyContent: 'center',
+                                    alignContent: 'center',
+                                    gap: '18px',
+                                    flexDirection: 'column',
+                                }}>
+                                    <Box item>
+                                        <Paper elevation={3} style={{ padding: '20px', marginTop: '20px' }}>
+                                            <CircularProgress />
+                                        </Paper>
+                                    </Box>
+                                    <Box item>
+                                        <Typography align="center">
+                                            Renderizando
+                                        </Typography>
+                                    </Box>
+
+                                </Grid>
+
+                            )
+                        }
                     </Box>
                 </Grid>
             ) : (
