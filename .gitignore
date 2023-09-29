@@ -7,6 +7,11 @@
 ### Linux ###
 *~
 
+
+### Folder Upload videos and .md ###
+
+uploads
+
 # temporary files which can be created if a process still has a handle open of a deleted file
 .fuse_hidden*
 
