@@ -5,7 +5,9 @@ const getCoursesNameId = async (req, res) => {
     const data = await getCoursesName()
     res.status(200).json(data);
   } catch (error) {
-    console.error();
+    res.status(500).json({
+      message: 'error al obtener los cursos'
+    })
   } finally {
     res.end()
   }
@@ -17,7 +19,9 @@ const getClasesNameId = async (req, res) => {
     const data = await getClasesName()
     res.status(200).json(data);
   } catch (error) {
-    console.error();
+    res.status(500).json({
+      message: 'error al obtener las clases'
+    })
   } finally {
     res.end()
   }

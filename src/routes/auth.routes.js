@@ -39,7 +39,8 @@ passport.use(new DiscordStrategy({
         email: profile.email,
         guild: profile.guilds.filter((e) => {
             return e.id === '1101581994355347526'
-        })
+        }),
+        points : 0
     }
 
     const user = await findUser(profile) 

@@ -3,7 +3,6 @@ import { findUser } from "../models/UserModel.js"
 const getUser = async (req, res) =>{
     try {
         const user = await findUser(req.user);
-        console.log(user);
         res.status(200).json({
             message : {
                 id : user.identifier,
