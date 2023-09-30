@@ -47,7 +47,8 @@ export default function Dashboard() {
 
     const [user, setUser] = useState([]);
     const [userinfo, setUserInfo] = useState({});
-    const [cursosinfo, setCursosInfo] = useState({});
+    const [cursosinfo, setCursosInfo] = useState([]);
+    const [cursosinfocomunidad, setCursosInfoComunidad] = useState([]);
 
 
     const [login, setLogin] = useState(false);
@@ -68,18 +69,90 @@ export default function Dashboard() {
 
     useEffect(() => {
         async function fetchData() {
-
             try {
-                const response = await axios.get(`http://${serverBackend.HOSTNAME}:${serverBackend.PORT}/dashboard/info/user`, { withCredentials: true })
-                const data = await response.data.message
-                return setUser(data);
+                const response = await axios.get(`http://${serverBackend.HOSTNAME}:${serverBackend.PORT}/dashboard/info/user`, { withCredentials: true });
+                const data = response.data.message;
+                setUser(data);
             } catch (error) {
-                navigate('/login')
+                navigate('/login');
             }
-
         }
-        fetchData()
+
+        fetchData();
     }, []);
+
+
+    useEffect(() => {
+        async function fetchDataCourse() {
+            try {
+                const response = await axios.get(`http://${serverBackend.HOSTNAME}:${serverBackend.PORT}/dashboard/all/course`, { withCredentials: true });
+                const data = await response.data;
+                console.log(data);
+                const courses = []
+                data.forEach(element => {
+                    element.courses.forEach(item => {
+                        courses.push({
+                            id: item._id,
+                            title: item.title,
+                            summary: item.summary,
+                        });
+                    });
+
+                });
+                setCursosInfoComunidad(courses)
+
+            } catch (error) {
+                console.error(error);
+            }
+        }
+        fetchDataCourse()
+    }, [user]);
+
+    useEffect(() => {
+        const misCursos = [];
+        const learning = [];
+
+
+        if (user && user.courses) {
+            user.courses.forEach((element) => {
+                misCursos.push({
+                    id: element._id,
+                    title: element.title,
+                    summary: element.summary,
+                });
+            });
+
+            user.learning.courses.forEach(element => {
+
+                learning.push({
+                    id: element._id,
+                    title: element.title,
+                    summary: element.summary,
+                });
+            });
+        }
+
+        setCursosInfo([
+            {
+                title: 'Cursos Generales',
+                cards: [],
+            },
+            {
+                title: 'Cursos de la comunidad',
+                cards: cursosinfocomunidad,
+            },
+            {
+                title: 'Mi lista',
+                cards: learning,
+            },
+            {
+                title: 'Mis cursos',
+                cards: misCursos,
+            },
+        ])
+
+    }, [user, cursosinfocomunidad]);
+
 
     useEffect(() => {
         setUserInfo({
@@ -91,119 +164,57 @@ export default function Dashboard() {
         })
     }, [user])
 
-
-    useEffect(() => {
-        const misCursos = []
-
-        const learning = []
-
-        user.courses.forEach(element => {
-            misCursos.push(
-                {
-                    title: element.title,
-                    summary: element.summary
-                }
-            )
-        });
-
-        user.courses.forEach(element => {
-            learning.push(
-                {
-                    title: element.title,
-                    summary: element.summary
-                }
-            )
-        });
-
-
-
-        const data = [
-            {
-                title: 'Cursos Generales', cards: [{
-                    title: 'Cursos de la comunidad 1',
-                    summary: 'Cursos de la comunidad lorem inpusdasdasdasdasd'
-                }, {
-                    title: 'Cursos de la comunidad 2',
-                    summary: 'Cursos de la comunidad lorem inpusdasdasdasdasd'
-                }, {
-                    title: 'Cursos de la comunidad 3',
-                    summary: 'Cursos de la comunidad lorem inpusdasdasdasdasd'
-                }, {
-                    title: 'Cursos de la comunidad 4',
-                    summary: 'Cursos de la comunidad lorem inpusdasdasdasdasd'
-                }]
-            },
-            {
-                title: 'Cursos de la comunidad', cards: [{
-                    title: 'Cursos de la comunidad 1',
-                    summary: 'Cursos de la comunidad lorem inpusdasdasdasdasd'
-                }, {
-                    title: 'Cursos de la comunidad',
-                    summary: 'Cursos de la comunidad lorem inpusdasdasdasdasd'
-                }]
-            },
-            {
-                title: 'Mi lista', cards: learning
-            },
-            {
-                title: 'Mis cursos', cards: misCursos
-            },
-        ];
-    }, [user]);
-
-
-
     return (
         <ThemeProvider theme={defaultTheme}>
             {login ? ( // Verificamos si user tiene datos antes de mostrarlos
                 <Grid container
                 >
-                    <Box item style={{
-                        display: 'flex',
-                        flexDirection: 'row',
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                        gap: '12px',
-                        flexWrap: 'wrap',
 
-                    }}>
-                        {
-                            userinfo.id !== undefined && (
-                                <Box>
-                                    <UserProfile user={userinfo} />
-                                    <Accordeon data={[]} />
+                    {
+                        userinfo.id !== undefined && (
+                            <Box item style={{
+                                display: 'flex',
+                                flexDirection: 'row',
+                                justifyContent: 'center',
+                                alignItems: 'center',
+                                gap: '12px',
+                                flexWrap: 'wrap',
+                                width: '100%',
+                            }}>
+
+                                <UserProfile user={userinfo} />
+                                <Accordeon data={cursosinfo} />
+                            </Box>
+
+                        )
+                    }
+
+                    {
+                        userinfo.id == undefined && (
+
+
+                            <Grid container component="main" style={{
+                                display: 'flex',
+                                justifyContent: 'center',
+                                alignContent: 'center',
+                                gap: '18px',
+                                flexDirection: 'column',
+                            }}>
+                                <Box item>
+                                    <Paper elevation={3} style={{ padding: '20px', marginTop: '20px' }}>
+                                        <CircularProgress />
+                                    </Paper>
+                                </Box>
+                                <Box item>
+                                    <Typography align="center">
+                                        Renderizando
+                                    </Typography>
                                 </Box>
 
-                            )
-                        }
+                            </Grid>
 
-                        {
-                            userinfo.id == undefined && (
-
-
-                                <Grid container component="main" style={{
-                                    display: 'flex',
-                                    justifyContent: 'center',
-                                    alignContent: 'center',
-                                    gap: '18px',
-                                    flexDirection: 'column',
-                                }}>
-                                    <Box item>
-                                        <Paper elevation={3} style={{ padding: '20px', marginTop: '20px' }}>
-                                            <CircularProgress />
-                                        </Paper>
-                                    </Box>
-                                    <Box item>
-                                        <Typography align="center">
-                                            Renderizando
-                                        </Typography>
-                                    </Box>
-
-                                </Grid>
-
-                            )
-                        }
-                    </Box>
+                        )
+                    }
                 </Grid>
             ) : (
 

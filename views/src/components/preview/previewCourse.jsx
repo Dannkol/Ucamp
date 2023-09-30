@@ -338,7 +338,7 @@ export function PreviewCourse(props) {
                         backgroundColor: 'rgb(4, 13, 18)',
                         color: 'white'
                     }}
-                    href={`/${quiz}`}
+                    href={`${quiz}`}
                 > Quiz </Button>) : <Box />}
                 {sheet && !tipo ? (<Button
                     disabled={false}
@@ -348,7 +348,7 @@ export function PreviewCourse(props) {
                         backgroundColor: 'rgb(4, 13, 18)',
                         color: 'white'
                     }}
-                    href={`/${sheet}`}
+                    href={`${sheet}`}
                 > Sheet </Button>) : <Box />}
             </Grid>
 

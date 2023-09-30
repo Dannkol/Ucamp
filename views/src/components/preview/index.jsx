@@ -115,6 +115,7 @@ export function IndexPreview(props) {
                     setFileVideo(`http://${serverBackend.HOSTNAME}:${serverBackend.PORT}/getVideo/${fetchcourse.courses[0].classes[optionsclases].content[0].split('.')[0]}`)
                     setReadmeClass(`http://${serverBackend.HOSTNAME}:${serverBackend.PORT}/getReadme/${fetchcourse.courses[0].classes[optionsclases].content[1].split('.')[0]}`)
                 } catch (error) {
+                    
                     console.error(error);
                 }
             }

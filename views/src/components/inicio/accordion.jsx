@@ -1,8 +1,11 @@
 import React, { useEffect, useState } from "react";
 
-import { TextField, ThemeProvider, Accordion, AccordionDetails, AccordionSummary, Box, Card, CardContent, Container, Typography, Avatar, Paper, Grid, Button, createTheme } from '@mui/material';
+import { TextField, ThemeProvider, Accordion, AccordionDetails, AccordionSummary, Box, Card, CardContent, Container, Typography, Avatar, Paper, Grid, Button, createTheme, CardActions } from '@mui/material';
 import { DateRange, Edit as EditIcon } from '@mui/icons-material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import ReactMarkdown from 'react-markdown';
+import { useNavigate } from "react-router-dom";
+
 
 
 const truncateStyles = {
@@ -13,7 +16,24 @@ const truncateStyles = {
 
 const defaultTheme = createTheme()
 
+const markdownStyles = {
+    img: {
+        maxWidth: '95%', // Limita el ancho máximo de las imágenes al 100%
+        height: 'auto',   // Permite que la altura se ajuste automáticamente
+    },
+    code: {
+        backgroundColor: '#f3f3f3', // Color de fondo para resaltar el código
+        padding: '4px 8px',        // Espaciado interno para el código
+        borderRadius: '4px',       // Bordes redondeados
+        fontFamily: 'monospace',   // Fuente monoespaciada para el código
+        overflowX: 'auto',         // Desplazamiento horizontal si el código es largo
+    }
+};
+
 const Accordeon = (props) => {
+
+    const navigate = useNavigate()
+    
 
     const [searchQuery, setSearchQuery] = useState('');
 
@@ -29,9 +49,10 @@ const Accordeon = (props) => {
                 display: 'flex',
                 justifyContent: 'center',
                 alignContent: 'center',
-                gap: '18px'
+                gap: '18px',
+                width: '100%',
             }}>
-                <Paper elevation={3} style={{ padding: '20px', marginTop: '20px' }}>
+                <Paper elevation={3} style={{ padding: '20px', marginTop: '20px', width: '80%' }}>
                     <Grid item spacing={2} xs={12}>
                         <TextField
                             label="Buscar por título"
@@ -45,7 +66,6 @@ const Accordeon = (props) => {
                                 <Accordion key={index} style={{
                                     maxWidth: '100%',
                                 }}>
-                                    {console.log(item)}
                                     <AccordionSummary expandIcon={<ExpandMoreIcon />}>
                                         <Typography>{item.title}</Typography>
                                     </AccordionSummary>
@@ -68,8 +88,30 @@ const Accordeon = (props) => {
                                                         <CardContent>
                                                             <Typography style={truncateStyles} variant="h6">{card.title}</Typography>
                                                             <hr></hr>
-                                                            <Typography style={truncateStyles} variant="body2">Contenido de la tarjeta {card.summary} </Typography>
+                                                            <Typography style={truncateStyles} variant="body2">Contenido de la tarjeta <br />
+                                                                <ReactMarkdown style={{
+                                                                    textAlign: 'start',
+                                                                }} components={
+                                                                    {
+                                                                        h1: ({ ...props }) => <h1 {...props} style={{ fontSize: '0.875rem' }} />,
+                                                                        h2: ({ ...props }) => <h2 {...props} style={{ fontSize: '0.875rem' }} />,
+                                                                        h3: ({ ...props }) => <h3 {...props} style={{ fontSize: '0.875rem' }} />,
+                                                                        h4: ({ ...props }) => <h4 {...props} style={{ fontSize: '0.875rem' }} />,
+                                                                        h5: ({ ...props }) => <h5 {...props} style={{ fontSize: '0.875rem' }} />,
+                                                                        h6: ({ ...props }) => <h6 {...props} style={{ fontSize: '0.875rem' }} />,
+                                                                        img: ({ ...props }) => <img {...props} style={markdownStyles.img} />,
+                                                                        pre: ({ ...props }) => <pre {...props} style={markdownStyles.code} />
+                                                                    }
+                                                                }>
+
+                                                                    {card.summary.split(' ').slice(0, 4).join(' ')}
+
+                                                                </ReactMarkdown>
+                                                            </Typography>
                                                         </CardContent>
+                                                        <CardActions>
+                                                            <Button onClick={() => navigate(`/preview/cursos?id=${card.id}`)} size="small">Ver</Button>
+                                                        </CardActions>
                                                     </Card>
                                                 </Grid>
                                             ))}
