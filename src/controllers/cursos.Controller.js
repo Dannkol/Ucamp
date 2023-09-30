@@ -1,4 +1,5 @@
-import { getCoursesName, getClasesName, getAllClasesByIds, getAllCourse } from "../models/Curso.Model.js";
+import { ObjectId } from "mongodb";
+import { getCoursesName, getClasesName, getAllClasesByIds, getAllCourse, mylist } from "../models/Curso.Model.js";
 
 const getCoursesNameId = async (req, res) => {
   try {
@@ -60,5 +61,21 @@ const getAllCoursecontent = async (req, res) => {
   }
 }
 
+const getmylist = async (req, res) => {
+  try {
+    const ids = req.body.params.mylist.map(e => new ObjectId(e._id));
+    const result = await mylist(ids);
 
-export { getAllCoursecontent, getCoursesNameId, getClasesNameId, getClasescontent }
+    res.status(200).json(result);
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      message: 'error al obtener los cursos'
+    })
+  } finally {
+    res.end();
+  }
+}
+
+export { getmylist, getAllCoursecontent, getCoursesNameId, getClasesNameId, getClasescontent }

@@ -1,6 +1,6 @@
 import { Router } from 'express'
 
-import { getAllCoursecontent } from '../../controllers/cursos.Controller.js';
+import { getAllCoursecontent, getmylist } from '../../controllers/cursos.Controller.js';
 
 import { getUser } from '../../controllers/dahsboard.Controller.js';
 
@@ -9,6 +9,8 @@ import { ensureAuthenticated } from '../../middleware/ensureAuthenticated.middle
 const IndexDashboard = Router();
 
 IndexDashboard.get('/dashboard/all/course', getAllCoursecontent)
+
+IndexDashboard.post('/dashboard/mylist', getmylist)
 
 IndexDashboard.get('/dashboard/info/user', getUser)
 

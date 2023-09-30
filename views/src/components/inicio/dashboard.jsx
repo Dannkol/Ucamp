@@ -49,6 +49,8 @@ export default function Dashboard() {
     const [userinfo, setUserInfo] = useState({});
     const [cursosinfo, setCursosInfo] = useState([]);
     const [cursosinfocomunidad, setCursosInfoComunidad] = useState([]);
+    
+    const [mylist, setMyList] = useState([]);
 
 
     const [login, setLogin] = useState(false);
@@ -87,7 +89,6 @@ export default function Dashboard() {
             try {
                 const response = await axios.get(`http://${serverBackend.HOSTNAME}:${serverBackend.PORT}/dashboard/all/course`, { withCredentials: true });
                 const data = await response.data;
-                console.log(data);
                 const courses = []
                 data.forEach(element => {
                     element.courses.forEach(item => {
@@ -109,6 +110,38 @@ export default function Dashboard() {
     }, [user]);
 
     useEffect(() => {
+        async function fetchDataMyList() {
+            try {
+                const response = await axios.post(`http://${serverBackend.HOSTNAME}:${serverBackend.PORT}/dashboard/mylist`, {
+                    params: {
+                        mylist: user.learning.courses
+                    },
+
+                }, { withCredentials: true });
+                const data = response.data;
+                console.log(data);
+                const courses = [];
+
+                data.forEach(element => {
+                    element.courses.forEach(item => {
+                        courses.push({
+                            id: item._id,
+                            title: item.title,
+                            summary: item.summary,
+                        });
+                    });
+                });
+
+                setMyList(courses);
+            } catch (error) {
+                console.error(error);
+            }
+        }
+
+        fetchDataMyList();
+    }, [user]);
+
+    useEffect(() => {
         const misCursos = [];
         const learning = [];
 
@@ -122,14 +155,16 @@ export default function Dashboard() {
                 });
             });
 
-            user.learning.courses.forEach(element => {
+            /*             user.learning.courses.forEach(element => {
+            
+                            learning.push({
+                                id: element._id,
+                                title: element.title,
+                                summary: element.summary,
+                            });
+                        }); */
 
-                learning.push({
-                    id: element._id,
-                    title: element.title,
-                    summary: element.summary,
-                });
-            });
+            console.log(user.learning.courses);
         }
 
         setCursosInfo([
@@ -143,7 +178,7 @@ export default function Dashboard() {
             },
             {
                 title: 'Mi lista',
-                cards: learning,
+                cards: mylist,
             },
             {
                 title: 'Mis cursos',

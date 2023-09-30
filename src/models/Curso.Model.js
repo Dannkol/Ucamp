@@ -207,19 +207,19 @@ const getAllCourseByid = async (data) => {
 
         const results = await users.findOne(
             {
-              "courses": {
-                $elemMatch: {
-                  "_id": new ObjectId(data)
+                "courses": {
+                    $elemMatch: {
+                        "_id": new ObjectId(data)
+                    }
                 }
-              }
             },
             {
-              projection: {
-                "_id": 0,
-                "courses.$": 1 
-              }
+                projection: {
+                    "_id": 0,
+                    "courses.$": 1
+                }
             }
-          );
+        );
 
         return results
 
@@ -241,12 +241,12 @@ const getAllCourse = async () => {
         const results = await users.find(
             {},
             {
-              projection: {
-                "_id": 0,
-                "courses": 1 
-              }
+                projection: {
+                    "_id": 0,
+                    "courses": 1
+                }
             }
-          ).toArray();
+        ).toArray();
 
         return results
 
@@ -257,5 +257,37 @@ const getAllCourse = async () => {
     }
 }
 
+const mylist = async (id) => {
+    const client = await mongoConn();
+    try {
+      const db = getDB("uCamp_db");
+      const users = await db.collection('users');
+  
+      const results = await users.aggregate([
+        {
+          $match: {
+            "courses._id": {
+              $in: id
+            }
+          }
+        },
+        {
+          $project: {
+            "_id": 0,
+            "courses": 1
+          }
+        }
+      ]).toArray();
+  
+      console.log(results[0].courses);
+      return results;
+  
+    } catch (error) {
+      throw error;
+    } finally {
+      await client.close();
+    }
+  };
+  
 
-export { getAllCourse, getCoursesName, getClasesName, getAllClasesByIds, createNewCourse, createNewClase, getAllCourseByid }
+export { getAllCourse, getCoursesName, getClasesName, getAllClasesByIds, createNewCourse, createNewClase, getAllCourseByid, mylist }

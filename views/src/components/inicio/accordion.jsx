@@ -33,9 +33,10 @@ const markdownStyles = {
 const Accordeon = (props) => {
 
     const navigate = useNavigate()
-    
+
 
     const [searchQuery, setSearchQuery] = useState('');
+
 
     const filteredData = props.data.map(item => ({
         ...item,
