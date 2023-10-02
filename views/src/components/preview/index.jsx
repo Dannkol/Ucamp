@@ -58,7 +58,7 @@ export function IndexPreview(props) {
             .catch(error => {
                 navigate('/login')
                 // Manejar errores aquí si es necesario
-                console.error(error);
+                
             });
     }, []);
 
@@ -96,11 +96,13 @@ export function IndexPreview(props) {
             try {
                 const response = await axios(`http://${serverBackend.HOSTNAME}:${serverBackend.PORT}/infocourse/${id}`, { withCredentials: true });
                 const data = await response.data;
+                console.log(response.status);
                 if (response.status !== 200) return navigate('/')
                 if (tipocourse === 'Generales') {
                     setTitleCursoDefault(data.nameCourse)
                     setSeccionesDefault(data.videos)
                     setOptionsClasesDefault(data.videos[0].videos[0])
+                    setVideoUrlGeneral(`http://192.168.128.23:5010/cursos/play?course=${id}&seccion=${1}&video=${data.videos[0].videos[0].video}`)
                 } else {
                     setFetchCourse(data);
                     setClase(data.courses?.[0]?.classes?.map(c => c._id) || [])
@@ -113,7 +115,7 @@ export function IndexPreview(props) {
 
             } catch (error) {
                 console.error('Error fetching data: ', error);
-                navigate('/')
+                
             }
         };
 
@@ -150,10 +152,12 @@ export function IndexPreview(props) {
     }
 
     const ChangeClassVideoDefaul = (video) => {
-        console.log(video);
         setVideoUrlGeneral(video)
     }
-
+    const ChangeClassDefaul = (clase) => {
+        console.log('class',clase);
+        setOptionsClasesDefault(clase)
+    }
     const hooksPropsPreviewCourse = {
         clase,
         text,
@@ -185,6 +189,7 @@ export function IndexPreview(props) {
 
     const hooksPropsPreviewCourseGeneral = {
         ChangeClassVideoDefaul,
+        ChangeClassDefaul,
         tipo: false,
         seccionescursodefault,
         titulocursodefault,

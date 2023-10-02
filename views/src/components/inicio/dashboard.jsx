@@ -113,7 +113,7 @@ export default function Dashboard() {
     useEffect(() => {
         async function fetchDataCourse() {
             try {
-                const response = await axios.get(`http://${serverBackend.HOSTNAME}:${serverBackend.PORT}/cursosdefaul`, { withCredentials: true });
+                const response = await axios.get(`http://192.168.128.23:5010/cursos/all`);
                 const data = await response.data;
                 const courses = []
                 data.forEach(item => {
@@ -125,7 +125,6 @@ export default function Dashboard() {
                         summary: item.nameCourse,
                     });
                 });
-                console.log('General', courses);
                 setCursosInfoGeneral(courses)
 
             } catch (error) {

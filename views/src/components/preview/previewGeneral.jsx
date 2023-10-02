@@ -27,10 +27,14 @@ import {
     CircularProgress,
     Accordion,
     AccordionSummary,
-    AccordionDetails
+    AccordionDetails,
+    Link
 } from '@mui/material';
 
 import axios from 'axios';
+
+import ReactMarkdown from 'react-markdown';
+
 
 const serverBackend = JSON.parse(import.meta.env.VITE_SERVERBACKEND)
 
@@ -75,8 +79,8 @@ const stylesText = {
 export function PreviewGeneral(props) {
 
     const videoRef = useRef(null);
-    
-    const { tipo, videoUrlGeneral, nombreDelCurso, titulocursodefault, seccionescursodefault, optionsclasesdefault, ChangeClassVideoDefaul } = props;
+
+    const { ChangeClassDefaul, tipo, videoUrlGeneral, nombreDelCurso, titulocursodefault, seccionescursodefault, optionsclasesdefault, ChangeClassVideoDefaul } = props;
 
 
     const [shouldHideDiv, setShouldHideDiv] = useState(false);
@@ -86,7 +90,7 @@ export function PreviewGeneral(props) {
         } else {
             setShouldHideDiv(false);
         }
-    }, [optionsclasesdefault, videoUrlGeneral, seccionescursodefault, titulocursodefault]);
+    }, [optionsclasesdefault, nombreDelCurso, videoUrlGeneral, seccionescursodefault, titulocursodefault]);
 
 
 
@@ -97,18 +101,25 @@ export function PreviewGeneral(props) {
             const [sectionIndex, videoIndex] = numeroDeSeccion;
 
             const video = seccionescursodefault[sectionIndex].videos[videoIndex];
-            
-            if (video && video.video) {
 
-                ChangeClassVideoDefaul(`http://192.168.128.23:5010/cursos/play?course=${nombreDelCurso}&seccion=${sectionIndex}&video=${video.video}`);
-                if (videoRef.current) {
-                    videoRef.current.load();
-                }
+            ChangeClassDefaul(video)
+
+            if (video && video.video) {
+                ChangeClassVideoDefaul(`http://192.168.128.23:5010/cursos/play?course=${nombreDelCurso}&seccion=${sectionIndex + 1}&video=${video.video}`);
             } else {
                 ChangeClassVideoDefaul(null);
             }
         }
     };
+
+    useEffect(() => {
+        // Cuando videoUrlGeneral cambia, carga el nuevo video si existe
+        if (videoUrlGeneral) {
+            if (videoRef.current) {
+                videoRef.current.load();
+            }
+        }
+    }, [videoUrlGeneral]);
 
     return (
         <div style={markdownContainerStyles}>
@@ -120,7 +131,9 @@ export function PreviewGeneral(props) {
             <Grid item align="center">
                 <Paper style={stylesText.paper} elevation={3} xs={12} >
                     <Typography style={stylesText.text}>
-                        tt
+                        {console.log('ddd', optionsclasesdefault)}
+                        {nombreDelCurso && nombreDelCurso}
+                        {optionsclasesdefault && ' - ' + optionsclasesdefault.Titulo}
                     </Typography>
                 </Paper>
             </Grid>
@@ -175,13 +188,69 @@ export function PreviewGeneral(props) {
                             }}
                             controls
                         >
+                            {console.log(videoUrlGeneral)}
                             <source src={videoUrlGeneral} type="video/mp4" />
                             Tu navegador no admite la reproducción de videos.
                         </video>
                     )}
                 </Box>
             </Grid>
+            <Grid item align="center" elevation={3} mt={2}>
+                <Box>
+                    {(optionsclasesdefault && optionsclasesdefault.links) && (
+                        optionsclasesdefault.links.map((link, index) => (
+                            <Accordion key={index}>
+                                <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                                    <Typography>{link["titulo-link"]}</Typography>
+                                </AccordionSummary>
+                                <AccordionDetails>
 
+                                    <Paper style={{ marginBottom: '15px', padding: '8px' }}>
+                                        <Link href={link.link} underline="none">
+                                            {link.link}
+                                        </Link>
+                                    </Paper>
+
+
+
+                                </AccordionDetails>
+                            </Accordion>
+
+                            /* seccion 5 temas puntuales */
+                        ))
+                    )}
+                </Box>
+            </Grid>
+            <Grid item align="center" elevation={3} mt={2}>
+                <Box>
+                    {(optionsclasesdefault && optionsclasesdefault.Texto) && (
+
+                        <ReactMarkdown style={{
+                            textAlign: 'start',
+                        }} components={
+                            {
+                                h1: ({ ...props }) => <h1 {...props} style={{ fontSize: '0.875rem' }} />,
+                                h2: ({ ...props }) => <h2 {...props} style={{ fontSize: '0.875rem' }} />,
+                                h3: ({ ...props }) => <h3 {...props} style={{ fontSize: '0.875rem' }} />,
+                                h4: ({ ...props }) => <h4 {...props} style={{ fontSize: '0.875rem' }} />,
+                                h5: ({ ...props }) => <h5 {...props} style={{ fontSize: '0.875rem' }} />,
+                                h6: ({ ...props }) => <h6 {...props} style={{ fontSize: '0.875rem' }} />,
+                                img: ({ ...props }) => <img {...props} style={markdownStyles.img} />,
+                                pre: ({ ...props }) => <pre {...props} style={markdownStyles.code} />
+                            }
+                        }>
+
+
+                            {optionsclasesdefault.Texto}
+
+
+                        </ReactMarkdown>
+
+                        /* seccion 5 temas puntuales */
+
+                    )}
+                </Box>
+            </Grid>
 
         </div>
 

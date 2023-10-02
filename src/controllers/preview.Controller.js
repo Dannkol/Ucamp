@@ -106,13 +106,15 @@ const isValidObjectId = (value) => {
 const getCourse = async (req, res) => {
     try {
         let data = []
+        console.log('sss');
         if (!isValidObjectId(req.params.id)) {
             try {
-                const response = await axios.get('http://192.168.1.8:5101/cursos', {
-                  params: { course: 'react' }
+                const response = await axios.get(`http://192.168.128.23:5010/cursos/v2`, {
+                  params: { course: req.params.id }
                 });
                 
                 data = response.data;
+               
               } catch (error) {
                 console.error('Error al realizar la solicitud HTTP:', error);
                 throw error;
@@ -121,9 +123,9 @@ const getCourse = async (req, res) => {
 
             data = await getAllCourseByid(req.params.id);
         }
-        if (!data) throw 'Course not found'
         return res.status(200).json(data)
     } catch (error) {
+
         return res.status(404).json(
             {
                 massage: 'Archivo no encontrado'
