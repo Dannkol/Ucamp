@@ -4,6 +4,7 @@ import PreviewImg from './preview.png'
 
 import animationFloting from './preview.css'
 
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
 import {
     MenuItem,
@@ -23,7 +24,10 @@ import {
     CardContent,
     Avatar,
     Chip,
-    CircularProgress
+    CircularProgress,
+    Accordion,
+    AccordionSummary,
+    AccordionDetails
 } from '@mui/material';
 
 import axios from 'axios';
@@ -69,21 +73,42 @@ const stylesText = {
 
 
 export function PreviewGeneral(props) {
+
+    const videoRef = useRef(null);
     
-    const { tipo, titulocursodefault, seccionescursodefault, optionsclasesdefault, ChangeClassDefaul } = props;
+    const { tipo, videoUrlGeneral, nombreDelCurso, titulocursodefault, seccionescursodefault, optionsclasesdefault, ChangeClassVideoDefaul } = props;
 
 
     const [shouldHideDiv, setShouldHideDiv] = useState(false);
     useEffect(() => {
-        if (true
-            ) {
+        if (optionsclasesdefault || seccionescursodefault || titulocursodefault) {
             setShouldHideDiv(true);
         } else {
             setShouldHideDiv(false);
         }
-    }, []);
+    }, [optionsclasesdefault, videoUrlGeneral, seccionescursodefault, titulocursodefault]);
 
-    console.log(optionsclasesdefault);
+
+
+    const ChangeClassDefault = (sectionIndex, videoIndex) => {
+        const numeroDeSeccion = [sectionIndex, videoIndex];
+        if (numeroDeSeccion !== null && seccionescursodefault.length > 0) {
+
+            const [sectionIndex, videoIndex] = numeroDeSeccion;
+
+            const video = seccionescursodefault[sectionIndex].videos[videoIndex];
+            
+            if (video && video.video) {
+
+                ChangeClassVideoDefaul(`http://192.168.128.23:5010/cursos/play?course=${nombreDelCurso}&seccion=${sectionIndex}&video=${video.video}`);
+                if (videoRef.current) {
+                    videoRef.current.load();
+                }
+            } else {
+                ChangeClassVideoDefaul(null);
+            }
+        }
+    };
 
     return (
         <div style={markdownContainerStyles}>
@@ -99,6 +124,65 @@ export function PreviewGeneral(props) {
                     </Typography>
                 </Paper>
             </Grid>
+            <Grid item style={{
+                marginTop: '20px',
+            }}>
+                {
+                    (seccionescursodefault && !tipo) && (
+                        seccionescursodefault.map((section, index) => (
+                            <Accordion key={index}>
+                                <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                                    <Typography>{section.sectionName}</Typography>
+                                </AccordionSummary>
+                                <AccordionDetails>
+                                    <ul style={{ listStyle: 'none', padding: 0 }}>
+                                        {section.videos.map((video, vIndex) => (
+                                            <Paper key={vIndex} style={{ marginBottom: '15px', padding: '8px' }}>
+                                                <li >
+                                                    <Typography variant="body1">{video.Titulo}</Typography>
+                                                    <Button
+                                                        size="small"
+                                                        color="primary"
+                                                        style={{ color: '#207178', backgroundColor: 'white', fontSize: '12px' }}
+                                                        onClick={() => {
+                                                            ChangeClassDefault(index, vIndex);
+                                                        }}
+                                                    >
+                                                        Ver Más
+                                                    </Button>
+                                                </li>
+                                            </Paper>
+
+                                        ))}
+                                    </ul>
+                                </AccordionDetails>
+                            </Accordion>
+                        ))
+                    )
+                }
+            </Grid>
+            <Grid item align="center" elevation={3} mt={2}>
+                <Box>
+                    {(videoUrlGeneral && tipo) && (
+                        <video
+                            ref={videoRef}
+                            style={{
+                                width: '100%',
+                                height: 'auto',
+                                border: '1px solid #ccc',
+                                borderRadius: '8px',
+                                boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.2)',
+                            }}
+                            controls
+                        >
+                            <source src={videoUrlGeneral} type="video/mp4" />
+                            Tu navegador no admite la reproducción de videos.
+                        </video>
+                    )}
+                </Box>
+            </Grid>
+
+
         </div>
 
     );

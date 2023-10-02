@@ -1,6 +1,5 @@
 import { ObjectId } from "mongodb";
 import { mongoConn, getDB } from "../config/connection.js";
-import axios from 'axios'
 
 const getCoursesName = async () => {
     const client = await mongoConn();
@@ -199,13 +198,6 @@ const createNewClase = async (data) => {
     }
 }
 
-const isValidObjectId = (value) => {
-    if (typeof value === 'string' && value.length === 24) {
-      return /^[0-9a-fA-F]{24}$/.test(value);
-    }
-    return false;
-  };
-
 
 const getAllCourseByid = async (data) => {
     const client = await mongoConn();
@@ -213,17 +205,7 @@ const getAllCourseByid = async (data) => {
         const db = getDB("uCamp_db")
         const users = await db.collection('users')
 
-        if (!isValidObjectId(data)) {
-            try {
-                const response = await axios.get('http://192.168.1.8:5101/cursos', {
-                  params: { course: 'react' }
-                });
-                return response.data;
-              } catch (error) {
-                console.error('Error al realizar la solicitud HTTP:', error);
-                throw error;
-              }
-        }
+
 
         const results = await users.findOne(
             {

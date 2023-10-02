@@ -45,7 +45,7 @@ export function IndexPreview(props) {
     const queryParameters = new URLSearchParams(window.location.search)
     const id = queryParameters.get("id")
     const tipocourse = queryParameters.get("tipo")
-    console.log(queryParameters);
+
     const [user, setUser] = useState(false);
 
     useEffect(() => {
@@ -88,8 +88,8 @@ export function IndexPreview(props) {
 
     const [titulocursodefault, setTitleCursoDefault] = useState('');
     const [seccionescursodefault, setSeccionesDefault] = useState([]);
-    const [optionsclasesdefault, setOptionsClasesDefault] = useState([]);
-
+    const [optionsclasesdefault, setOptionsClasesDefault] = useState(null);
+    const [videoUrlGeneral, setVideoUrlGeneral] = useState(null);
 
     useEffect(() => {
         const fetchDatacourse = async () => {
@@ -97,10 +97,10 @@ export function IndexPreview(props) {
                 const response = await axios(`http://${serverBackend.HOSTNAME}:${serverBackend.PORT}/infocourse/${id}`, { withCredentials: true });
                 const data = await response.data;
                 if (response.status !== 200) return navigate('/')
-                console.log(tipocourse);
                 if (tipocourse === 'Generales') {
                     setTitleCursoDefault(data.nameCourse)
                     setSeccionesDefault(data.videos)
+                    setOptionsClasesDefault(data.videos[0].videos[0])
                 } else {
                     setFetchCourse(data);
                     setClase(data.courses?.[0]?.classes?.map(c => c._id) || [])
@@ -149,8 +149,9 @@ export function IndexPreview(props) {
         }
     }
 
-    const ChangeClassDefaul = (id) =>{
-        setOptionsClasesDefault(seccionescursodefault[id])
+    const ChangeClassVideoDefaul = (video) => {
+        console.log(video);
+        setVideoUrlGeneral(video)
     }
 
     const hooksPropsPreviewCourse = {
@@ -169,21 +170,25 @@ export function IndexPreview(props) {
         titleclass,
         filevideo,
         readme: readmeclass,
-        tipo,
-        ChangeClass
+        tipo
     };
 
     const hooksPropsPreviewClassGeneral = {
         optionsclasesdefault,
-        tipo : true
+        seccionescursodefault,
+        tipo: true,
+        nombreDelCurso : id,
+        videoUrlGeneral,
+        ChangeClassVideoDefaul
     };
 
 
     const hooksPropsPreviewCourseGeneral = {
-        ChangeClassDefaul,
-        tipo : false,
+        ChangeClassVideoDefaul,
+        tipo: false,
         seccionescursodefault,
-        titulocursodefault
+        titulocursodefault,
+        nombreDelCurso : id
     };
 
 
