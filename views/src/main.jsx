@@ -16,7 +16,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
       <Layout>
         <Routes>
           <Route index element={<Dashboard />} />
-          <Route path="/about" element={<UserProfile />} />
+
           <Route path="/login" element={<SignInSide />} /> {/* RUTA POR DEFAULT */}
           <Route path="/formulario/clases" element={<UploadCourses typeUpdload={false} />} /> {/* RUTA PARA LA CREACION DE CLASES */}
           <Route path="/formulario/cursos" element={<UploadCourses typeUpdload={true}/>} /> {/* RUTA PARA LA CREACION DE CURSOS */}

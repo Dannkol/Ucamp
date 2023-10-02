@@ -49,9 +49,10 @@ export default function Dashboard() {
     const [userinfo, setUserInfo] = useState({});
     const [cursosinfo, setCursosInfo] = useState([]);
     const [cursosinfocomunidad, setCursosInfoComunidad] = useState([]);
-    
+
     const [mylist, setMyList] = useState([]);
 
+    const [cursosinfoGeneral, setCursosInfoGeneral] = useState([]);
 
     const [login, setLogin] = useState(false);
 
@@ -110,6 +111,31 @@ export default function Dashboard() {
     }, [user]);
 
     useEffect(() => {
+        async function fetchDataCourse() {
+            try {
+                const response = await axios.get(`http://${serverBackend.HOSTNAME}:${serverBackend.PORT}/cursosdefaul`, { withCredentials: true });
+                const data = await response.data;
+                const courses = []
+                data.forEach(item => {
+                    
+                    courses.push({
+                        id: item.folder,
+                        img: item.imagenCourse,
+                        title: item.nameCourse,
+                        summary: item.nameCourse,
+                    });
+                });
+                console.log('General', courses);
+                setCursosInfoGeneral(courses)
+
+            } catch (error) {
+                console.error(error);
+            }
+        }
+        fetchDataCourse()
+    }, [user]);
+
+    useEffect(() => {
         async function fetchDataMyList() {
             try {
                 const response = await axios.post(`http://${serverBackend.HOSTNAME}:${serverBackend.PORT}/dashboard/mylist`, {
@@ -119,7 +145,6 @@ export default function Dashboard() {
 
                 }, { withCredentials: true });
                 const data = response.data;
-                console.log(data);
                 const courses = [];
 
                 data.forEach(element => {
@@ -164,13 +189,12 @@ export default function Dashboard() {
                             });
                         }); */
 
-            console.log(user.learning.courses);
         }
 
         setCursosInfo([
             {
                 title: 'Cursos Generales',
-                cards: [],
+                cards: cursosinfoGeneral,
             },
             {
                 title: 'Cursos de la comunidad',
@@ -186,7 +210,7 @@ export default function Dashboard() {
             },
         ])
 
-    }, [user, cursosinfocomunidad]);
+    }, [user, cursosinfocomunidad, mylist, cursosinfoGeneral]);
 
 
     useEffect(() => {

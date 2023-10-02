@@ -2,9 +2,18 @@ import React, { useState, useEffect } from 'react';
 
 import { TextField, ThemeProvider, Accordion, AccordionDetails, AccordionSummary, Box, Card, CardContent, Container, Typography, Avatar, Paper, Grid, Button, createTheme } from '@mui/material';
 import Stack from '@mui/material/Stack';
+import { useNavigate } from 'react-router-dom';
 
 const defaultTheme = createTheme();
 
+const hoveredButton = {
+    '&:hover': {
+      color: '#78D6C6',
+      backgroundColor: 'white', // Cambia el color de fondo al pasar el cursor
+      transition: 'background-color 1s ease',
+      fontSize: '14.2px'
+    }
+  }
 
 function stringToColor(string) {
     let hash = 0;
@@ -27,7 +36,6 @@ function stringToColor(string) {
 }
 
 function stringAvatar(name) {
-    console.log('dsds', name);
     return {
         sx: {
             bgcolor: stringToColor(name),
@@ -40,6 +48,9 @@ function stringAvatar(name) {
 const UserProfile = (poprs) => {
 
     const username = poprs.user.username
+
+  const navigate = useNavigate();
+
 
     return (
         <ThemeProvider theme={defaultTheme}>
@@ -67,6 +78,18 @@ const UserProfile = (poprs) => {
                             <Typography variant="subtitle1">Correo Electrónico: {poprs.user.email}</Typography>
                             <Typography variant="subtitle1">points: {poprs.user.points}</Typography>
                             <Typography variant="subtitle1">{poprs.user.rol === 0 ? 'Creador de cursos' : 'Standar'}</Typography>
+                            {
+                                poprs.user.rol === 0 && (
+                                    <Button
+                                    variant="outlined"
+                                    component="span"
+                                    fullWidth
+                                    style={{ color: '#207178', backgroundColor: 'white', fontSize: '18px' }}
+                                    sx={hoveredButton}
+                                    onClick={() => navigate('/formulario/cursos')}
+                                  > Crear Nuevo Curso </Button>
+                                )
+                            }
                         </Grid>
                     </Grid>
                 </Paper>

@@ -34,9 +34,10 @@ const Accordeon = (props) => {
 
     const navigate = useNavigate()
 
-
+    const [showacordeon, setShowAcordeon] = useState('open')
     const [searchQuery, setSearchQuery] = useState('');
 
+    console.log(props);
 
     const filteredData = props.data.map(item => ({
         ...item,
@@ -66,7 +67,10 @@ const Accordeon = (props) => {
                             filteredData.map((item, index) => (
                                 <Accordion key={index} style={{
                                     maxWidth: '100%',
-                                }}>
+                                }}
+                                expanded={showacordeon === item.title}
+                                onClick={() => setShowAcordeon(item.title)}
+                                >
                                     <AccordionSummary expandIcon={<ExpandMoreIcon />}>
                                         <Typography>{item.title}</Typography>
                                     </AccordionSummary>
@@ -111,7 +115,14 @@ const Accordeon = (props) => {
                                                             </Typography>
                                                         </CardContent>
                                                         <CardActions>
-                                                            <Button onClick={() => navigate(`/preview/cursos?id=${card.id}`)} size="small">Ver</Button>
+                                                            <Button onClick={() => navigate(`/preview/cursos?id=${card.id}&tipo=${item.title.split(' ')[1]}`)} size="small">Ver</Button>
+                                                            {["Mi lista","Mis cursos"].includes(item.title) && (
+                                                                <Button
+                                                                    onClick={() => navigate(`/preview/cursos?id=${card.id}?`)}
+                                                                    color="tertiary"
+                                                                    size="small"
+                                                                    variant="filled" >Eliminar</Button>
+                                                            )}
                                                         </CardActions>
                                                     </Card>
                                                 </Grid>

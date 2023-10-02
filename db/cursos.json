@@ -1,0 +1,38 @@
+[
+    {
+      "folder": "docker",
+      "nameCourse": "Docker - Guía práctica de uso para desarrolladores",
+      "imagenCourse": "https://import.cdn.thinkific.com/643563/courses/2100309/FJdi8w3ORKSdzhLcV53c_Docker.jpg",
+      "duracion": 49535654
+    },
+    {
+      "folder": "git",
+      "nameCourse": "GIT+GitHub: Todo un sistema de control de versiones de cero",
+      "imagenCourse": "https://import.cdn.thinkific.com/643563/courses/1870146/idTZJiouTqWbJrtKBloh_git-github.jpg",
+      "duracion": 41102686
+    },
+    {
+      "folder": "javascript",
+      "nameCourse": "JavaScript Moderno: Guía para dominar el lenguaje",
+      "imagenCourse": "https://import.cdn.thinkific.com/643563/courses/1907483/IaFyqRTQCAph7DfFVjuA_Javascript-moderno-refresh1.png",
+      "duracion": 73438818
+    },
+    {
+      "folder": "nodejs",
+      "nameCourse": "Node.Js: De cero a experto",
+      "imagenCourse": "https://import.cdn.thinkific.com/643563/63BJ0OoTdCl8SPMlIOpA_NODE-JS-COVER-CURSO.jpg",
+      "duracion": 85942936
+    },
+    {
+      "folder": "react",
+      "nameCourse": "React: De cero a experto ( Hooks y MERN )",
+      "imagenCourse": "https://import.cdn.thinkific.com/643563/courses/1901683/3leYeOG2Qcu7PEZ1el4q_react.jpg",
+      "duracion": 179499638
+    },
+    {
+      "folder": "sql",
+      "nameCourse": "SQL de cero: Tu guía práctica con PostgreSQL",
+      "imagenCourse": "https://import.cdn.thinkific.com/643563/courses/2347687/yqioXcxTsWUJ7foeQFZl_SQL-COVER-CURSO.jpg",
+      "duracion": 57502789
+    }
+  ]

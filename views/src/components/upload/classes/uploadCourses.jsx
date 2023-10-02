@@ -292,7 +292,10 @@ const FileUpload = ({ typeUpdload }) => {
   const AnswerAlert = (answer) => {
     if (answer) {
       window.location.href = typeUpdload ? '/formulario/clases' : '/formulario/cursos';
+      setShowAlert(false)
     }
+    setShowAlert(false)
+
   }
 
 

@@ -1,5 +1,6 @@
 import { ObjectId } from "mongodb";
 import { mongoConn, getDB } from "../config/connection.js";
+import axios from 'axios'
 
 const getCoursesName = async () => {
     const client = await mongoConn();
@@ -198,12 +199,31 @@ const createNewClase = async (data) => {
     }
 }
 
+const isValidObjectId = (value) => {
+    if (typeof value === 'string' && value.length === 24) {
+      return /^[0-9a-fA-F]{24}$/.test(value);
+    }
+    return false;
+  };
+
+
 const getAllCourseByid = async (data) => {
     const client = await mongoConn();
     try {
         const db = getDB("uCamp_db")
         const users = await db.collection('users')
 
+        if (!isValidObjectId(data)) {
+            try {
+                const response = await axios.get('http://192.168.1.8:5101/cursos', {
+                  params: { course: 'react' }
+                });
+                return response.data;
+              } catch (error) {
+                console.error('Error al realizar la solicitud HTTP:', error);
+                throw error;
+              }
+        }
 
         const results = await users.findOne(
             {
@@ -260,34 +280,67 @@ const getAllCourse = async () => {
 const mylist = async (id) => {
     const client = await mongoConn();
     try {
-      const db = getDB("uCamp_db");
-      const users = await db.collection('users');
-  
-      const results = await users.aggregate([
-        {
-          $match: {
-            "courses._id": {
-              $in: id
+        const db = getDB("uCamp_db");
+        const users = await db.collection('users');
+
+        const results = await users.aggregate([
+            {
+                $match: {
+                    "courses._id": {
+                        $in: id
+                    }
+                }
+            },
+            {
+                $project: {
+                    "_id": 0,
+                    "courses": 1
+                }
             }
-          }
-        },
-        {
-          $project: {
-            "_id": 0,
-            "courses": 1
-          }
-        }
-      ]).toArray();
-  
-      console.log(results[0].courses);
-      return results;
-  
+        ]).toArray();
+
+        return results;
+
     } catch (error) {
-      throw error;
+        throw error;
     } finally {
-      await client.close();
+        await client.close();
     }
-  };
-  
+};
+
+
+const deletMyList = async (id) => {
+
+    const client = await mongoConn();
+    try {
+        const db = getDB("uCamp_db");
+        const users = await db.collection('users');
+
+        const results = await users.aggregate([
+            {
+                $match: {
+                    "courses._id": {
+                        $in: id
+                    }
+                }
+            },
+            {
+                $project: {
+                    "_id": 0,
+                    "courses": 1
+                }
+            }
+        ]).toArray();
+
+        console.log(results[0].courses);
+        return results;
+
+    } catch (error) {
+        throw error;
+    } finally {
+        await client.close();
+    }
+}
+
 
 export { getAllCourse, getCoursesName, getClasesName, getAllClasesByIds, createNewCourse, createNewClase, getAllCourseByid, mylist }

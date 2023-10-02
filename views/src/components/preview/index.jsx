@@ -35,6 +35,7 @@ import axios from 'axios';
 
 const defaultTheme = createTheme();
 
+import { PreviewGeneral } from './previewGeneral';
 import { PreviewCourse } from './previewCourse';
 import { useNavigate } from 'react-router-dom';
 
@@ -43,22 +44,22 @@ const serverBackend = JSON.parse(import.meta.env.VITE_SERVERBACKEND)
 export function IndexPreview(props) {
     const queryParameters = new URLSearchParams(window.location.search)
     const id = queryParameters.get("id")
-
-
+    const tipocourse = queryParameters.get("tipo")
+    console.log(queryParameters);
     const [user, setUser] = useState(false);
 
     useEffect(() => {
-      // Realizamos la solicitud Axios dentro de useEffect
-      axios.get(`http://${serverBackend.HOSTNAME}:${serverBackend.PORT}/me`, { withCredentials: true })
-        .then(response => {
-          // Cuando la solicitud es exitosa, actualizamos el estado con los datos recibidos
-          setUser(response.data.message);
-        })
-        .catch(error => {
-          navigate('/login')
-          // Manejar errores aquí si es necesario
-          console.error(error);
-        });
+        // Realizamos la solicitud Axios dentro de useEffect
+        axios.get(`http://${serverBackend.HOSTNAME}:${serverBackend.PORT}/me`, { withCredentials: true })
+            .then(response => {
+                // Cuando la solicitud es exitosa, actualizamos el estado con los datos recibidos
+                setUser(response.data.message);
+            })
+            .catch(error => {
+                navigate('/login')
+                // Manejar errores aquí si es necesario
+                console.error(error);
+            });
     }, []);
 
     /* Props */
@@ -83,19 +84,33 @@ export function IndexPreview(props) {
     const navigate = useNavigate();
 
 
+    /* PROPS CURSOS POR DEFAULT */
+
+    const [titulocursodefault, setTitleCursoDefault] = useState('');
+    const [seccionescursodefault, setSeccionesDefault] = useState([]);
+    const [optionsclasesdefault, setOptionsClasesDefault] = useState([]);
+
+
     useEffect(() => {
         const fetchDatacourse = async () => {
             try {
                 const response = await axios(`http://${serverBackend.HOSTNAME}:${serverBackend.PORT}/infocourse/${id}`, { withCredentials: true });
                 const data = await response.data;
                 if (response.status !== 200) return navigate('/')
-                setFetchCourse(data);
-                setClase(data.courses?.[0]?.classes?.map(c => c._id) || [])
-                setText(data.courses?.[0]?.summary || '')
-                setTitle(data.courses?.[0]?.title || '')
-                setQuiz(data.courses?.[0]?.quiz?.[0] || '')
-                setSheet(data.courses?.[0]?.quiz?.[1] || '')
-                setReadme(`http://${serverBackend.HOSTNAME}:${serverBackend.PORT}/getReadme/${data.courses?.[0]?.content?.split('.')[0]}`)
+                console.log(tipocourse);
+                if (tipocourse === 'Generales') {
+                    setTitleCursoDefault(data.nameCourse)
+                    setSeccionesDefault(data.videos)
+                } else {
+                    setFetchCourse(data);
+                    setClase(data.courses?.[0]?.classes?.map(c => c._id) || [])
+                    setText(data.courses?.[0]?.summary || '')
+                    setTitle(data.courses?.[0]?.title || '')
+                    setQuiz(data.courses?.[0]?.quiz?.[0] || '')
+                    setSheet(data.courses?.[0]?.quiz?.[1] || '')
+                    setReadme(`http://${serverBackend.HOSTNAME}:${serverBackend.PORT}/getReadme/${data.courses?.[0]?.content?.split('.')[0]}`)
+                }
+
             } catch (error) {
                 console.error('Error fetching data: ', error);
                 navigate('/')
@@ -115,7 +130,7 @@ export function IndexPreview(props) {
                     setFileVideo(`http://${serverBackend.HOSTNAME}:${serverBackend.PORT}/getVideo/${fetchcourse.courses[0].classes[optionsclases].content[0].split('.')[0]}`)
                     setReadmeClass(`http://${serverBackend.HOSTNAME}:${serverBackend.PORT}/getReadme/${fetchcourse.courses[0].classes[optionsclases].content[1].split('.')[0]}`)
                 } catch (error) {
-                    
+
                     console.error(error);
                 }
             }
@@ -132,6 +147,10 @@ export function IndexPreview(props) {
         if (tipo) {
             setOptionsClases(id);
         }
+    }
+
+    const ChangeClassDefaul = (id) =>{
+        setOptionsClasesDefault(seccionescursodefault[id])
     }
 
     const hooksPropsPreviewCourse = {
@@ -153,6 +172,20 @@ export function IndexPreview(props) {
         tipo,
         ChangeClass
     };
+
+    const hooksPropsPreviewClassGeneral = {
+        optionsclasesdefault,
+        tipo : true
+    };
+
+
+    const hooksPropsPreviewCourseGeneral = {
+        ChangeClassDefaul,
+        tipo : false,
+        seccionescursodefault,
+        titulocursodefault
+    };
+
 
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down("md"));
@@ -216,7 +249,13 @@ export function IndexPreview(props) {
 
                         >
 
-                            {<PreviewCourse {...hooksPropsPreviewClass} style={{ height: '100%', width: '100%', display: { xs: 'none', sm: 'block' } }} />}
+                            {
+
+                                tipocourse !== 'Generales' ?
+                                    <PreviewCourse {...hooksPropsPreviewClass} style={{ height: '100%', width: '100%', display: { xs: 'none', sm: 'block' } }} />
+                                    : <PreviewGeneral {...hooksPropsPreviewClassGeneral} style={{ height: '100%', width: '100%', display: { xs: 'none', sm: 'block' } }} />
+
+                            }
                         </Box>
                     </Grid>
                 ) : (
@@ -248,7 +287,12 @@ export function IndexPreview(props) {
                             }}
 
                         >
-                            {<PreviewCourse {...hooksPropsPreviewCourse} style={{ height: '100%', width: '100%', display: { xs: 'none', sm: 'block' } }} />}
+                            {
+
+                                tipocourse !== 'Generales' ?
+                                    <PreviewCourse {...hooksPropsPreviewCourse} style={{ height: '100%', width: '100%', display: { xs: 'none', sm: 'block' } }} />
+                                    : <PreviewGeneral {...hooksPropsPreviewCourseGeneral} style={{ height: '100%', width: '100%', display: { xs: 'none', sm: 'block' } }} />
+                            }
                         </Box>
                     </Grid>}
                 <Grid item xs={12} >
