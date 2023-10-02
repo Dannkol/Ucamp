@@ -57,7 +57,7 @@
                     "duracion": 541966
                 },
                 {
-                    "titulo": "Primeros pasos en React",
+                    "Titulo": "Primeros pasos en React",
                     "video": "react-2-03-Primeros_pasos_en_React",
                     "Texto": "Temas puntuales de la sección\n¿Qué aprenderemos en esta sección?\n\n¿Qué es React?\n\nConceptos generales\n\nBabel\n\nJSX\n\nDaremos nuestros primeros pasos y una pequeña aplicación que nos ayudará a perderle el miedo a React rápidamente",
                     "duracion": 541966,
