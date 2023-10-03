@@ -36,23 +36,41 @@ const serverBackend = JSON.parse(import.meta.env.VITE_SERVERBACKEND)
 function areArraysEqual(arr1, arr2) {
     // Verifica si las longitudes de los arrays son diferentes
     if (arr1.length !== arr2.length) {
-      return false;
+        return false;
     }
-  
+
     // Compara cada elemento de los arrays
     for (let i = 0; i < arr1.length; i++) {
-      if (arr1[i] !== arr2[i]) {
-        return false;
-      }
+        if (arr1[i] !== arr2[i]) {
+            return false;
+        }
     }
-  
+
     // Si no se encontraron diferencias, los arrays son iguales
     return true;
-  }
+}
 
 export function PreviewCourse(props) {
     const videoRef = useRef(null);
-    const { title, filevideo, textclass, titleclass, file, curso, clase, readme, text, quiz, sheet, tipo, ChangeClass } = props;
+    const { id, title, filevideo, textclass, titleclass, file, curso, clase, readme, text, quiz, sheet, tipo, ChangeClass } = props;
+
+    const [owner, setOwner] = useState(false)
+
+    useEffect(() => {
+        async function fetchData() {
+            try {
+                const response = await axios.get(`http://${serverBackend.HOSTNAME}:${serverBackend.PORT}/dashboard/info/user`, { withCredentials: true });
+                const data = response.data.message;
+                const idcourses = data.courses.map(course => course._id);
+                console.log();
+                setOwner(idcourses.includes(id));
+            } catch (error) {
+                navigate('/login');
+            }
+        }
+
+        fetchData();
+    }, [id]);
 
     const [shouldHideDiv, setShouldHideDiv] = useState(false);
 
@@ -62,7 +80,7 @@ export function PreviewCourse(props) {
         } else {
             setShouldHideDiv(false);
         }
-    }, [title, filevideo,textclass, titleclass, file, curso, clase, readme, text, quiz, sheet]);
+    }, [title, filevideo, textclass, titleclass, file, curso, clase, readme, text, quiz, sheet]);
 
     const [markdownContent, setMarkdownContent] = useState('');
     const [markdownContentText, setMarkdownContentText] = useState('');
@@ -70,18 +88,18 @@ export function PreviewCourse(props) {
     const [videoUrl, setVideoUrl] = useState(null);
     useEffect(() => {
         if (file) {
-          const videoURL = URL.createObjectURL(file);
-          setVideoUrl(videoURL);
+            const videoURL = URL.createObjectURL(file);
+            setVideoUrl(videoURL);
         } else if (filevideo) {
-          console.log(filevideo);
-          setVideoUrl(filevideo);
+            console.log(filevideo);
+            setVideoUrl(filevideo);
         }
-    
+
 
         if (videoRef.current) {
-          videoRef.current.load();
+            videoRef.current.load();
         }
-      }, [file, filevideo]);
+    }, [file, filevideo]);
 
     const [fetchclase, setFetchclase] = useState([])
 
@@ -134,7 +152,7 @@ export function PreviewCourse(props) {
                 if (post.clases !== undefined) {
                     const response = await axios.post(`http://${serverBackend.HOSTNAME}:${serverBackend.PORT}/all/content/clases`, post, { withCredentials: true });
                     data = await response.data;
-                    if(!(areArraysEqual(data.map(c => c._id), clase))) return setFetchclase(data.reverse())
+                    if (!(areArraysEqual(data.map(c => c._id), clase))) return setFetchclase(data.reverse())
                 }
                 return setFetchclase(data);
                 // Almacena la respuesta en el estado fethclase
@@ -340,7 +358,7 @@ export function PreviewCourse(props) {
                     }}
                     href={`${quiz}`}
                 > Quiz </Button>) : <Box />}
-                {sheet && !tipo ? (<Button
+                {((sheet && !tipo) || owner) ? (<Button
                     disabled={false}
                     size="small"
                     variant="large"
@@ -350,6 +368,19 @@ export function PreviewCourse(props) {
                     }}
                     href={`${sheet}`}
                 > Sheet </Button>) : <Box />}
+                {id && (<Button
+                    disabled={false}
+                    size="small"
+                    variant="large"
+                    style={{
+                        backgroundColor: 'rgb(4, 13, 18)',
+                        color: 'white'
+                    }}
+                    onClick={ async () => {
+                        const data = await axios.get(`http://${serverBackend.HOSTNAME}:${serverBackend.PORT}/addmylist/${id}`, { withCredentials: true })
+                        console.log(data);
+                    }}
+                > mylist </Button>) }
             </Grid>
 
         </div>

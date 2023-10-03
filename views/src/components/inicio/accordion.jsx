@@ -5,6 +5,7 @@ import { DateRange, Edit as EditIcon } from '@mui/icons-material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ReactMarkdown from 'react-markdown';
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 
 
@@ -30,19 +31,20 @@ const markdownStyles = {
     }
 };
 
-const Accordeon = (props) => {
+const serverBackend = JSON.parse(import.meta.env.VITE_SERVERBACKEND)
+
+const Accordeon = ({data, onChangeUpdate}) => {
 
     const navigate = useNavigate()
 
     const [showacordeon, setShowAcordeon] = useState('open')
     const [searchQuery, setSearchQuery] = useState('');
 
-    console.log(props);
-
-    const filteredData = props.data.map(item => ({
+    const filteredData = data.map(item => ({
         ...item,
         cards: item.cards.filter(card => card.title.toLowerCase().includes(searchQuery.toLowerCase())),
     })).filter(item => item.cards.length > 0);
+
 
     return (
         <ThemeProvider theme={defaultTheme}>
@@ -118,7 +120,10 @@ const Accordeon = (props) => {
                                                             <Button onClick={() => navigate(`/preview/cursos?id=${card.id}&tipo=${item.title.split(' ')[1]}`)} size="small">Ver</Button>
                                                             {["Mi lista","Mis cursos"].includes(item.title) && (
                                                                 <Button
-                                                                    onClick={() => navigate(`/preview/cursos?id=${card.id}?`)}
+                                                                    onClick={ async () => {
+                                                                        await axios.get(`http://${serverBackend.HOSTNAME}:${serverBackend.PORT}/dashboard/mylist/delate/${card.id}`, { withCredentials: true })
+                                                                        onChangeUpdate()
+                                                                    }}
                                                                     color="tertiary"
                                                                     size="small"
                                                                     variant="filled" >Eliminar</Button>

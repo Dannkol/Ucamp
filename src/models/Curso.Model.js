@@ -290,32 +290,53 @@ const mylist = async (id) => {
     }
 };
 
+const addmylist = async (id, iduser) => {
+    const client = await mongoConn();
+    try {
+        const db = getDB("uCamp_db");
+        const users = await db.collection('users');
 
-const deletMyList = async (id) => {
+        const newCourse = {
+            _id: new ObjectId(id),
+            status: 0,
+          }
+
+          const updateOperation = {
+            $push: {
+              'learning.courses': newCourse,
+            },
+          };
+        
+        const results = await users.updateOne({ identifier: iduser }, updateOperation)
+
+        return results;
+
+    } catch (error) {
+        console.log(error);
+        throw error;
+    } finally {
+        await client.close();
+    }
+};
+
+const deletMyList = async (id, iduser) => {
 
     const client = await mongoConn();
     try {
         const db = getDB("uCamp_db");
         const users = await db.collection('users');
 
-        const results = await users.aggregate([
-            {
-                $match: {
-                    "courses._id": {
-                        $in: id
-                    }
-                }
+        const updateOperation = {
+            $pull: {
+              'learning.courses': { _id: new ObjectId(id) },
             },
-            {
-                $project: {
-                    "_id": 0,
-                    "courses": 1
-                }
-            }
-        ]).toArray();
+          };
+        const results = await users.updateOne({ identifier: iduser }, updateOperation)
 
-        console.log(results[0].courses);
-        return results;
+        console.log(results);
+        return {
+            message: 'ok'
+        };
 
     } catch (error) {
         throw error;
@@ -325,4 +346,4 @@ const deletMyList = async (id) => {
 }
 
 
-export { getAllCourse, getCoursesName, getClasesName, getAllClasesByIds, createNewCourse, createNewClase, getAllCourseByid, mylist }
+export { addmylist, getAllCourse, getCoursesName, getClasesName, getAllClasesByIds, createNewCourse, createNewClase, getAllCourseByid, mylist, deletMyList }

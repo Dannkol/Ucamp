@@ -166,7 +166,8 @@ export function IndexPreview(props) {
         sheet,
         tipo,
         readme,
-        ChangeClass
+        ChangeClass,
+        id
     };
 
     const hooksPropsPreviewClass = {

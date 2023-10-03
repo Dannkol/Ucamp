@@ -45,6 +45,8 @@ export default function Dashboard() {
 
     const navigate = useNavigate();
 
+    const [update , setUpdates] = useState(false)
+
     const [user, setUser] = useState([]);
     const [userinfo, setUserInfo] = useState({});
     const [cursosinfo, setCursosInfo] = useState([]);
@@ -58,7 +60,11 @@ export default function Dashboard() {
 
     const serverBackend = JSON.parse(import.meta.env.VITE_SERVERBACKEND)
 
-
+    const changeUpdate = () => {
+        console.log('dd');
+        setUpdates((prevUpdate) => !prevUpdate);
+        navigate('/')
+    }
 
     useEffect(() => {
         axios.get(`http://${serverBackend.HOSTNAME}:${serverBackend.PORT}/me`, { withCredentials: true })
@@ -108,7 +114,7 @@ export default function Dashboard() {
             }
         }
         fetchDataCourse()
-    }, [user]);
+    }, [user,update]);
 
     useEffect(() => {
         async function fetchDataCourse() {
@@ -132,7 +138,7 @@ export default function Dashboard() {
             }
         }
         fetchDataCourse()
-    }, [user]);
+    }, [user,update]);
 
     useEffect(() => {
         async function fetchDataMyList() {
@@ -163,7 +169,7 @@ export default function Dashboard() {
         }
 
         fetchDataMyList();
-    }, [user]);
+    }, [user,update]);
 
     useEffect(() => {
         const misCursos = [];
@@ -179,14 +185,6 @@ export default function Dashboard() {
                 });
             });
 
-            /*             user.learning.courses.forEach(element => {
-            
-                            learning.push({
-                                id: element._id,
-                                title: element.title,
-                                summary: element.summary,
-                            });
-                        }); */
 
         }
 
@@ -209,7 +207,7 @@ export default function Dashboard() {
             },
         ])
 
-    }, [user, cursosinfocomunidad, mylist, cursosinfoGeneral]);
+    }, [user, cursosinfocomunidad, mylist, cursosinfoGeneral,update]);
 
 
     useEffect(() => {
@@ -241,7 +239,7 @@ export default function Dashboard() {
                             }}>
 
                                 <UserProfile user={userinfo} />
-                                <Accordeon data={cursosinfo} />
+                                <Accordeon data={cursosinfo} onChangeUpdate={changeUpdate} />
                             </Box>
 
                         )
