@@ -4,7 +4,7 @@ import { getAllCoursecontent, getmylist } from '../../controllers/cursos.Control
 
 import { getUser } from '../../controllers/dahsboard.Controller.js';
 
-import { deletMyListController } from '../../controllers/cursos.Controller.js';
+import { deletmycourses, deletMyListController } from '../../controllers/cursos.Controller.js';
 
 import { ensureAuthenticated } from '../../middleware/ensureAuthenticated.middleware.js';
 
@@ -17,6 +17,8 @@ IndexDashboard.post('/dashboard/mylist', getmylist)
 IndexDashboard.get('/dashboard/info/user', getUser)
 
 IndexDashboard.get('/dashboard/mylist/delate/:idcourse', deletMyListController)
+IndexDashboard.get('/dashboard/mycourses/delate/:idcourse', deletmycourses)
+
 
 
 export { IndexDashboard }

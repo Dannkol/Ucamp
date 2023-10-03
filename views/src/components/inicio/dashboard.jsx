@@ -61,9 +61,8 @@ export default function Dashboard() {
     const serverBackend = JSON.parse(import.meta.env.VITE_SERVERBACKEND)
 
     const changeUpdate = () => {
-        console.log('dd');
         setUpdates((prevUpdate) => !prevUpdate);
-        navigate('/')
+        window.location.reload(true);
     }
 
     useEffect(() => {

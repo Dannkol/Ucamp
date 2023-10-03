@@ -121,7 +121,7 @@ const Accordeon = ({data, onChangeUpdate}) => {
                                                             {["Mi lista","Mis cursos"].includes(item.title) && (
                                                                 <Button
                                                                     onClick={ async () => {
-                                                                        await axios.get(`http://${serverBackend.HOSTNAME}:${serverBackend.PORT}/dashboard/mylist/delate/${card.id}`, { withCredentials: true })
+                                                                        await axios.get(`http://${serverBackend.HOSTNAME}:${serverBackend.PORT}/dashboard/${ item.title === 'Mis cursos' ? 'mycourses' : 'mylist' }/delate/${card.id}`, { withCredentials: true })
                                                                         onChangeUpdate()
                                                                     }}
                                                                     color="tertiary"

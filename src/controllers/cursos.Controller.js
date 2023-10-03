@@ -1,5 +1,5 @@
 import { ObjectId } from "mongodb";
-import { addmylist, deletMyList, getCoursesName, getClasesName, getAllClasesByIds, getAllCourse, mylist } from "../models/Curso.Model.js";
+import { deletcourses, addmylist, deletMyList, getCoursesName, getClasesName, getAllClasesByIds, getAllCourse, mylist } from "../models/Curso.Model.js";
 
 const getCoursesNameId = async (req, res) => {
   try {
@@ -104,4 +104,17 @@ const getmylist = async (req, res) => {
   }
 }
 
-export { addMyListController, deletMyListController, getmylist, getAllCoursecontent, getCoursesNameId, getClasesNameId, getClasescontent }
+const deletmycourses = async (req, res) => {
+  try {
+    const data = await deletcourses(req.params.idcourse, req.user.identificador)
+    res.status(200).json(data);
+  } catch (error) {
+    res.status(500).json({
+      message: 'error al eliminar de mi lista'
+    })
+  } finally {
+    res.end()
+  }
+}
+
+export { deletmycourses, addMyListController, deletMyListController, getmylist, getAllCoursecontent, getCoursesNameId, getClasesNameId, getClasescontent }

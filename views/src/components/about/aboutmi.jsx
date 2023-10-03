@@ -8,12 +8,12 @@ const defaultTheme = createTheme();
 
 const hoveredButton = {
     '&:hover': {
-      color: '#78D6C6',
-      backgroundColor: 'white', // Cambia el color de fondo al pasar el cursor
-      transition: 'background-color 1s ease',
-      fontSize: '14.2px'
+        color: '#78D6C6',
+        backgroundColor: 'white', // Cambia el color de fondo al pasar el cursor
+        transition: 'background-color 1s ease',
+        fontSize: '14.2px'
     }
-  }
+}
 
 function stringToColor(string) {
     let hash = 0;
@@ -49,7 +49,7 @@ const UserProfile = (poprs) => {
 
     const username = poprs.user.username
 
-  const navigate = useNavigate();
+    const navigate = useNavigate();
 
 
     return (
@@ -80,14 +80,24 @@ const UserProfile = (poprs) => {
                             <Typography variant="subtitle1">{poprs.user.rol === 0 ? 'Creador de cursos' : 'Standar'}</Typography>
                             {
                                 poprs.user.rol === 0 && (
-                                    <Button
-                                    variant="outlined"
-                                    component="span"
-                                    fullWidth
-                                    style={{ color: '#207178', backgroundColor: 'white', fontSize: '18px' }}
-                                    sx={hoveredButton}
-                                    onClick={() => navigate('/formulario/cursos')}
-                                  > Crear Nuevo Curso </Button>
+                                    <Box xs={12}>
+                                        <Button
+                                            variant="outlined"
+                                            component="span"
+                                            fullWidth
+                                            style={{ color: '#207178', backgroundColor: 'white', fontSize: '18px', marginBottom: '10px' }}
+                                            sx={hoveredButton}
+                                            onClick={() => navigate('/formulario/cursos')}
+                                        > Crear Nuevo Curso </Button>
+                                        <Button
+                                            variant="outlined"
+                                            component="span"
+                                            fullWidth
+                                            style={{ color: '#207178', backgroundColor: 'white', fontSize: '18px' }}
+                                            sx={hoveredButton}
+                                            onClick={() => navigate('/formulario/clases')}
+                                        > Crear Nueva Clase </Button>
+                                    </Box>
                                 )
                             }
                         </Grid>
