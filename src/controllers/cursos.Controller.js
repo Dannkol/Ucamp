@@ -32,7 +32,6 @@ const addMyListController = async (req, res) => {
     const data = await addmylist(req.params.idcourse, req.user.identificador)
     res.status(200).json(data);
   } catch (error) {
-    console.log(error);
     res.status(500).json({
       message: 'error al eliminar de mi lista'
     })

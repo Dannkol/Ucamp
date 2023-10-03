@@ -310,7 +310,6 @@ const addmylist = async (id, iduser) => {
 
     return results;
   } catch (error) {
-    console.log(error);
     throw error;
   } finally {
     await client.close();
@@ -386,7 +385,6 @@ const deletcourses = async (id, iduser) => {
       message: "ok",
     };
   } catch (error) {
-    console.log(error);
     throw error;
   } finally {
     client.close();

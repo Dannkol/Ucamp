@@ -60,7 +60,6 @@ Router_Init.get('/cursosdefaul', (req, res) => {
 Router_Init.get('/cursos', (req, res) => {
   // Aquí puedes manejar las acciones que deseas realizar en la ruta protegida
   const course= req.query.course;
-  console.log(course);
   if(!course || course !== 'react') return res.status(403).json({
     message: 'Archivo no encontrado'
   });

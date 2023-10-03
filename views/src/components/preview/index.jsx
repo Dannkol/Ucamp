@@ -96,7 +96,6 @@ export function IndexPreview(props) {
             try {
                 const response = await axios(`http://${serverBackend.HOSTNAME}:${serverBackend.PORT}/infocourse/${id}`, { withCredentials: true });
                 const data = await response.data;
-                console.log(response.status);
                 if (response.status !== 200) return navigate('/')
                 if (tipocourse === 'Generales') {
                     setTitleCursoDefault(data.nameCourse)

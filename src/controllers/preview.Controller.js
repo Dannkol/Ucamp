@@ -106,7 +106,6 @@ const isValidObjectId = (value) => {
 const getCourse = async (req, res) => {
     try {
         let data = []
-        console.log('sss');
         if (!isValidObjectId(req.params.id)) {
             try {
                 const response = await axios.get(`http://192.168.128.23:5010/cursos/v2`, {
