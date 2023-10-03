@@ -3,7 +3,7 @@ import { deletcourses, addmylist, deletMyList, getCoursesName, getClasesName, ge
 
 const getCoursesNameId = async (req, res) => {
   try {
-    const data = await getCoursesName()
+    const data = await getCoursesName(req.user.identificador)
     res.status(200).json(data);
   } catch (error) {
     res.status(500).json({
@@ -43,7 +43,7 @@ const addMyListController = async (req, res) => {
 
 const getClasesNameId = async (req, res) => {
   try {
-    const data = await getClasesName()
+    const data = await getClasesName(req.user.identificador)
     res.status(200).json(data);
   } catch (error) {
     res.status(500).json({

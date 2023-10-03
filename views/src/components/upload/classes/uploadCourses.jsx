@@ -143,6 +143,7 @@ const FileUpload = ({ typeUpdload }) => {
       try {
         const response = await axios(`http://${serverBackend.HOSTNAME}:${serverBackend.PORT}/all/courses`, { withCredentials: true });
         const data = await response.data;
+        console.log(data);
         setOptionsCursos(data);
       } catch (error) {
         console.error('Error fetching data: ', error);
@@ -157,6 +158,7 @@ const FileUpload = ({ typeUpdload }) => {
       try {
         const response = await axios(`http://${serverBackend.HOSTNAME}:${serverBackend.PORT}/all/clases`, { withCredentials: true });
         const data = await response.data;
+        console.log(data);
         setOptionsClases(data);
       } catch (error) {
         console.error('Error fetching data: ', error);
@@ -590,7 +592,7 @@ const FileUpload = ({ typeUpdload }) => {
                   sx={hoveredButton}
                   className='titleClassUpload'
                 >
-                  Crear clase
+                  Crear
                 </Button>
               </Grid>
             </Box>

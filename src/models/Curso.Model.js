@@ -1,12 +1,17 @@
 import { ObjectId } from "mongodb";
 import { mongoConn, getDB } from "../config/connection.js";
 
-const getCoursesName = async () => {
+const getCoursesName = async (id) => {
     const client = await mongoConn();
     try {
         const db = getDB("uCamp_db")
         const users = await db.collection('users')
         const pipeline = [
+            {
+                $match : {
+                    identifier : id
+                }
+            },
             {
                 $project: {
                     _id: 0,
@@ -24,7 +29,6 @@ const getCoursesName = async () => {
         const result = await users.aggregate(pipeline).toArray();
 
         const transformedArray = [];
-
         // Iteramos sobre el array de entrada
         result.forEach((item) => {
             // Si ambos campos id y curso no están vacíos
@@ -44,7 +48,7 @@ const getCoursesName = async () => {
     }
 }
 
-const getClasesName = async () => {
+const getClasesName = async (id) => {
     const client = await mongoConn();
     try {
         const db = getDB("uCamp_db")
@@ -52,6 +56,11 @@ const getClasesName = async () => {
         const pipeline = [
             {
                 $unwind: "$courses"
+            },
+            {
+                $match : {
+                    identifier : id
+                }
             },
             {
                 $unwind: "$courses.classes"
@@ -136,8 +145,6 @@ const createNewCourse = async (data, iduser) => {
     try {
         const db = getDB("uCamp_db")
         const users = await db.collection('users')
-
-        console.log(iduser);
 
         const query = { identifier: iduser }
 
