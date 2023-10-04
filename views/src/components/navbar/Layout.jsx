@@ -72,9 +72,6 @@ export default function Layout({ children }) {
                                     <Link to="/" style={{ textDecoration: 'none' }} underline="none" >
                                         <Typography style={{ color: "white" }} component="h6" >Inicio</Typography>
                                     </Link>
-                                    <Link to="/about" style={{ textDecoration: 'none' }} underline="none"  >
-                                        <Typography style={{ color: "white" }} component="h6" >Perfil</Typography>
-                                    </Link>
                                 </Box>
                             )}
                         </Typography>

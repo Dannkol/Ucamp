@@ -190,7 +190,6 @@ export function PreviewGeneral(props) {
                             }}
                             controls
                         >
-                            {console.log(videoUrlGeneral)}
                             <source src={videoUrlGeneral} type="video/mp4" />
                             Tu navegador no admite la reproducción de videos.
                         </video>
@@ -206,8 +205,7 @@ export function PreviewGeneral(props) {
                                     <Typography>{link["titulo-link"]}</Typography>
                                 </AccordionSummary>
                                 <AccordionDetails>
-
-                                    <Paper style={{ marginBottom: '15px', padding: '8px' }}>
+                                    <Paper style={{ marginBottom: '15px', padding: '8px', overflowX:'auto' }}>
                                         <Link href={link.link} underline="none">
                                             {link.link}
                                         </Link>

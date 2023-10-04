@@ -25,11 +25,6 @@ function DrawerComponent() {
               <Link to="/"> <Typography>Home</Typography> </Link>
             </ListItemText>
           </ListItem>
-          <ListItem onClick={() => setOpenDrawer(false)}>
-            <ListItemText>
-              <Link to="/about"><Typography>About</Typography> </Link>
-            </ListItemText>
-          </ListItem>
         </List>
       </Drawer>
       <IconButton onClick={() => setOpenDrawer(!openDrawer)}>

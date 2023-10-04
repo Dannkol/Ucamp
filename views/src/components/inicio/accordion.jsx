@@ -33,7 +33,7 @@ const markdownStyles = {
 
 const serverBackend = JSON.parse(import.meta.env.VITE_SERVERBACKEND)
 
-const Accordeon = ({data, onChangeUpdate}) => {
+const Accordeon = ({ data, onChangeUpdate }) => {
 
     const navigate = useNavigate()
 
@@ -70,8 +70,8 @@ const Accordeon = ({data, onChangeUpdate}) => {
                                 <Accordion key={index} style={{
                                     maxWidth: '100%',
                                 }}
-                                expanded={showacordeon === item.title}
-                                onClick={() => setShowAcordeon(item.title)}
+                                    expanded={showacordeon === item.title}
+                                    onClick={() => setShowAcordeon(item.title)}
                                 >
                                     <AccordionSummary expandIcon={<ExpandMoreIcon />}>
                                         <Typography>{item.title}</Typography>
@@ -92,6 +92,25 @@ const Accordeon = ({data, onChangeUpdate}) => {
                                                         maxHeight: '550px',
                                                         maxWidth: 'auto'
                                                     }}>
+                                                        {card.img && (
+                                                            <CardMedia
+                                                                style={{
+                                                                    height: '12rem',
+                                                                }}
+                                                                image={card.img}
+                                                                title="portada"
+                                                            >
+                                                                <img
+                                                                    style={{
+                                                                        width: '100%',
+                                                                        height: '100%',
+                                                                        objectFit: 'contain',
+                                                                    }}
+                                                                    src={card.img}
+                                                                    alt="portada"
+                                                                />
+                                                            </CardMedia>
+                                                        )}
                                                         <CardContent>
                                                             <Typography style={truncateStyles} variant="h6">{card.title}</Typography>
                                                             <hr></hr>
@@ -118,10 +137,10 @@ const Accordeon = ({data, onChangeUpdate}) => {
                                                         </CardContent>
                                                         <CardActions>
                                                             <Button onClick={() => navigate(`/preview/cursos?id=${card.id}&tipo=${item.title.split(' ')[1]}`)} size="small">Ver</Button>
-                                                            {["Mi lista","Mis cursos"].includes(item.title) && (
+                                                            {["Mi lista", "Mis cursos"].includes(item.title) && (
                                                                 <Button
-                                                                    onClick={ async () => {
-                                                                        await axios.get(`http://${serverBackend.HOSTNAME}:${serverBackend.PORT}/dashboard/${ item.title === 'Mis cursos' ? 'mycourses' : 'mylist' }/delate/${card.id}`, { withCredentials: true })
+                                                                    onClick={async () => {
+                                                                        await axios.get(`http://${serverBackend.HOSTNAME}:${serverBackend.PORT}/dashboard/${item.title === 'Mis cursos' ? 'mycourses' : 'mylist'}/delate/${card.id}`, { withCredentials: true })
                                                                         onChangeUpdate()
                                                                     }}
                                                                     color="tertiary"
