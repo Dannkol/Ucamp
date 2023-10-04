@@ -293,10 +293,15 @@ const FileUpload = ({ typeUpdload }) => {
 
   const AnswerAlert = (answer) => {
     if (answer) {
+
       window.location.href = typeUpdload ? '/formulario/clases' : '/formulario/cursos';
       setShowAlert(false)
+    } else {
+      const pathname = location.pathname;
+      window.location.href = typeUpdload ? pathname : '/';
+
+      setShowAlert(false)
     }
-    setShowAlert(false)
 
   }
 
