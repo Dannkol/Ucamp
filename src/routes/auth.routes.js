@@ -18,7 +18,6 @@ let scopes = ['identify', 'email', 'guilds', 'guilds.join'];
 
 const SERVER = JSON.parse(process.env.SERVER)
 
-
 passport.use(new DiscordStrategy({
     clientID: process.env.CLIENTIDDISCORD,
     clientSecret: process.env.CLIENTSECRETDISCORD,
@@ -39,12 +38,9 @@ passport.use(new DiscordStrategy({
         email: profile.email,
         guild: profile.guilds.filter((e) => {
             return e.id === '1101581994355347526'
-        })
+        }),
+        points : 0
     }
-
-    const user = await findUser(profile) 
-    
-    if (!user)  await NewUser(profile)
     
     return done(null, profile);
 
@@ -57,11 +53,25 @@ passport.use(new DiscordStrategy({
 Router_Auth.get('/auth/discord', passport.authenticate('discord'));
 
 Router_Auth.get('/auth/discord/callback',
-    passport.authenticate('discord', { failureRedirect: '/' }),
-    (req, res) => {
-        // Autenticación exitosa, puedes redirigir al usuario a una página de inicio de sesión, por ejemplo.
-        res.redirect('/ok');
-
+    (req, res, next) => {
+        passport.authenticate('discord', async (err, user) => {
+            if (err) {
+                // Manejar el error aquí y responder en consecuencia
+                console.error('Error de autenticación:', err);
+                return res.status(500).send('Error de autenticación');
+            }
+            // Autenticación exitosa
+            req.login(user, async (loginErr) => {
+                if (loginErr) {
+                    return res.status(500).send('Error de inicio de sesión');
+                }
+                // Redirigir al usuario a la página de éxito
+                const user = await findUser(req.user) 
+    
+                if (!user)  await NewUser(req.user)
+                res.redirect('/ok');
+            });
+        })(req, res, next);
     }
 );
 

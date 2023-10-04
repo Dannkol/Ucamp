@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
+import UserProfile from "../about/aboutmi";
+
 import {
     Grid,
     LinearProgress,
@@ -13,8 +15,12 @@ import {
     CardActions,
     Button,
     ThemeProvider,
-    createTheme
+    createTheme,
+    CircularProgress,
+    Paper
 } from '@mui/material'
+
+import Accordeon from '../inicio/accordion';
 
 
 const defaultTheme = createTheme();
@@ -35,100 +41,235 @@ const stylesText = {
 };
 
 export default function Dashboard() {
+
+
     const navigate = useNavigate();
 
-    const [user, setUser] = useState(false);
+    const [update , setUpdates] = useState(false)
+
+    const [user, setUser] = useState([]);
+    const [userinfo, setUserInfo] = useState({});
+    const [cursosinfo, setCursosInfo] = useState([]);
+    const [cursosinfocomunidad, setCursosInfoComunidad] = useState([]);
+
+    const [mylist, setMyList] = useState([]);
+
+    const [cursosinfoGeneral, setCursosInfoGeneral] = useState([]);
+
+    const [login, setLogin] = useState(false);
 
     const serverBackend = JSON.parse(import.meta.env.VITE_SERVERBACKEND)
 
+    const changeUpdate = () => {
+        setUpdates((prevUpdate) => !prevUpdate);
+        window.location.reload(true);
+    }
+
     useEffect(() => {
-        // Realizamos la solicitud Axios dentro de useEffect
         axios.get(`http://${serverBackend.HOSTNAME}:${serverBackend.PORT}/me`, { withCredentials: true })
             .then(response => {
-                // Cuando la solicitud es exitosa, actualizamos el estado con los datos recibidos
-                setUser(response.data.message);
+                setLogin(response.data.message);
             })
             .catch(error => {
                 navigate('/login')
-                // Manejar errores aquí si es necesario
-                console.error(error);
             });
     }, []);
 
+    useEffect(() => {
+        async function fetchData() {
+            try {
+                const response = await axios.get(`http://${serverBackend.HOSTNAME}:${serverBackend.PORT}/dashboard/info/user`, { withCredentials: true });
+                const data = response.data.message;
+                setUser(data);
+            } catch (error) {
+                navigate('/login');
+            }
+        }
+
+        fetchData();
+    }, []);
+
+
+    useEffect(() => {
+        async function fetchDataCourse() {
+            try {
+                const response = await axios.get(`http://${serverBackend.HOSTNAME}:${serverBackend.PORT}/dashboard/all/course`, { withCredentials: true });
+                const data = await response.data;
+                const courses = []
+                data.forEach(element => {
+                    element.courses.forEach(item => {
+                        courses.push({
+                            id: item._id,
+                            title: item.title,
+                            summary: item.summary,
+                        });
+                    });
+
+                });
+                setCursosInfoComunidad(courses)
+
+            } catch (error) {
+                console.error(error);
+            }
+        }
+        fetchDataCourse()
+    }, [user,update]);
+
+    useEffect(() => {
+        async function fetchDataCourse() {
+            try {
+                const response = await axios.get(`http://192.168.128.23:5010/cursos/all`);
+                const data = await response.data;
+                const courses = []
+                data.forEach(item => {
+                    
+                    courses.push({
+                        id: item.folder,
+                        img: item.imagenCourse,
+                        title: item.nameCourse,
+                        summary: item.nameCourse,
+                    });
+                });
+                setCursosInfoGeneral(courses)
+
+            } catch (error) {
+                console.error(error);
+            }
+        }
+        fetchDataCourse()
+    }, [user,update]);
+
+    useEffect(() => {
+        async function fetchDataMyList() {
+            try {
+                const response = await axios.post(`http://${serverBackend.HOSTNAME}:${serverBackend.PORT}/dashboard/mylist`, {
+                    params: {
+                        mylist: user.learning.courses
+                    },
+
+                }, { withCredentials: true });
+                const data = response.data;
+                const courses = [];
+
+                data.forEach(element => {
+                    element.courses.forEach(item => {
+                        courses.push({
+                            id: item._id,
+                            title: item.title,
+                            summary: item.summary,
+                        });
+                    });
+                });
+
+                setMyList(courses);
+            } catch (error) {
+                console.error(error);
+            }
+        }
+
+        fetchDataMyList();
+    }, [user,update]);
+
+    useEffect(() => {
+        const misCursos = [];
+        const learning = [];
+
+
+        if (user && user.courses) {
+            user.courses.forEach((element) => {
+                misCursos.push({
+                    id: element._id,
+                    title: element.title,
+                    summary: element.summary,
+                });
+            });
+
+
+        }
+
+        setCursosInfo([
+            {
+                title: 'Cursos Generales',
+                cards: cursosinfoGeneral,
+            },
+            {
+                title: 'Cursos de la comunidad',
+                cards: cursosinfocomunidad,
+            },
+            {
+                title: 'Mi lista',
+                cards: mylist,
+            },
+            {
+                title: 'Mis cursos',
+                cards: misCursos,
+            },
+        ])
+
+    }, [user, cursosinfocomunidad, mylist, cursosinfoGeneral,update]);
+
+
+    useEffect(() => {
+        setUserInfo({
+            id: user.id,
+            username: user.username,
+            email: user.email,
+            rol: user.rol,
+            points: user.points
+        })
+    }, [user])
+
     return (
         <ThemeProvider theme={defaultTheme}>
-            {user ? ( // Verificamos si user tiene datos antes de mostrarlos
-                <Grid container style={{
-                    display: 'flex',
-                    flexDirection: 'row',
-                    justifyContent: 'between',
-                    alignItems: 'start',
-                    gap: '12px'
-                }}
-
+            {login ? ( // Verificamos si user tiene datos antes de mostrarlos
+                <Grid container
                 >
-                    <Box item>
-                        <Card sx={{ margin : '12px', display: 'inline-block', width: '275px', maxHeight: 350, borderBottom: '1px solid black', borderLeft: '1px solid black' }} style={stylesText.paper} >
-                            <CardContent>
-                                <Typography variant="h5" style={{ wordWrap: 'break-word' }} component="div">
-                                    Title
-                                </Typography>
-                                <Box
-                                    style={{
-                                        width: 'auto', // Cambié 'auto' a '100%' para ocupar todo el ancho disponible
-                                        maxHeight: '150px', // Establecí una altura máxima para limitar el tamaño de la box
-                                        overflow: 'auto',
 
-                                    }}
-                                >
-                                    <Typography variant="body2" style={{
-                                        fontSize: '18px',
-                                        whiteSpace: 'pre-wrap',
-                                        wordWrap: 'break-word',
-                                    }} color="text.secondary">
-                                        Resumen:
+                    {
+                        userinfo.id !== undefined && (
+                            <Box item style={{
+                                display: 'flex',
+                                flexDirection: 'row',
+                                justifyContent: 'center',
+                                alignItems: 'center',
+                                gap: '12px',
+                                flexWrap: 'wrap',
+                                width: '100%',
+                            }}>
+
+                                <UserProfile user={userinfo} />
+                                <Accordeon data={cursosinfo} onChangeUpdate={changeUpdate} />
+                            </Box>
+
+                        )
+                    }
+
+                    {
+                        userinfo.id == undefined && (
+
+
+                            <Grid container component="main" style={{
+                                display: 'flex',
+                                justifyContent: 'center',
+                                alignContent: 'center',
+                                gap: '18px',
+                                flexDirection: 'column',
+                            }}>
+                                <Box item>
+                                    <Paper elevation={3} style={{ padding: '20px', marginTop: '20px' }}>
+                                        <CircularProgress />
+                                    </Paper>
+                                </Box>
+                                <Box item>
+                                    <Typography align="center">
+                                        Renderizando
                                     </Typography>
                                 </Box>
-                                <Typography variant="body2" color="text.secondary">
-                                    Fecha de actualización:
-                                </Typography>
-                            </CardContent>
-                            <CardActions>
-                                <Button onClick={() => console.log('click')} size="small">Ver</Button>
-                            </CardActions>
-                        </Card>
-                    </Box>
-                    <Box item>
-                        <Card sx={{ margin: '12px', display: 'inline-block', width: '275px', maxHeight: 350, borderBottom: '1px solid black', borderLeft: '1px solid black' }} style={stylesText.paper} >
-                            <CardContent>
-                                <Typography variant="h5" style={{ wordWrap: 'break-word' }} component="div">
-                                    Title
-                                </Typography>
-                                <Box
-                                    style={{
-                                        width: 'auto', // Cambié 'auto' a '100%' para ocupar todo el ancho disponible
-                                        maxHeight: '150px', // Establecí una altura máxima para limitar el tamaño de la box
-                                        overflow: 'auto',
 
-                                    }}
-                                >
-                                    <Typography variant="body2" style={{
-                                        fontSize: '18px',
-                                        whiteSpace: 'pre-wrap',
-                                        wordWrap: 'break-word',
-                                    }} color="text.secondary">
-                                        Resumen:
-                                    </Typography>
-                                </Box>
-                                <Typography variant="body2" color="text.secondary">
-                                    Fecha de actualización:
-                                </Typography>
-                            </CardContent>
-                            <CardActions>
-                                <Button onClick={() => console.log('click')} size="small">Ver</Button>
-                            </CardActions>
-                        </Card>
-                    </Box>
+                            </Grid>
+
+                        )
+                    }
                 </Grid>
             ) : (
 

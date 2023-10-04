@@ -22,10 +22,12 @@ const findUser = async (user) => {
 
         const result = await users.findOne(query)
 
+        if(result === undefined) throw 'error'
+
         return result
 
     } catch (error) {
-        return
+        throw 'error'
     }finally{
         await client.close();
     }

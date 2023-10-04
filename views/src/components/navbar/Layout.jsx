@@ -1,4 +1,4 @@
-import React from "react";
+import React , { useEffect, useState } from "react";
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
@@ -14,6 +14,11 @@ import axios from 'axios';
 
 
 export default function Layout({ children }) {
+
+
+    const serverBackend = JSON.parse(import.meta.env.VITE_SERVERBACKEND)
+
+
     const navigate = useNavigate()
     const theme = useTheme()
     const isMobile = useMediaQuery(theme.breakpoints.down("md"));
@@ -22,13 +27,12 @@ export default function Layout({ children }) {
     // Verificar si la ubicación actual es "/login"
     const isLoginPage = location.pathname === '/login';
 
-    const serverBackend = JSON.parse(import.meta.env.VITE_SERVERBACKEND)
 
     const handleFetch = async () => {
         try {
             await axios.get(`http://${serverBackend.HOSTNAME}:${serverBackend.PORT}/logout`, { withCredentials: true })
         } catch (error) {
-            console.log('good');
+            console.log('error');
         } finally {
             navigate('/login')
         }
@@ -69,7 +73,7 @@ export default function Layout({ children }) {
                                         <Typography style={{ color: "white" }} component="h6" >Inicio</Typography>
                                     </Link>
                                     <Link to="/about" style={{ textDecoration: 'none' }} underline="none"  >
-                                        <Typography style={{ color: "white" }} component="h6" >about</Typography>
+                                        <Typography style={{ color: "white" }} component="h6" >Perfil</Typography>
                                     </Link>
                                 </Box>
                             )}

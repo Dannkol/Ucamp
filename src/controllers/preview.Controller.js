@@ -1,11 +1,13 @@
 
-import { getAllCourse } from '../models/Curso.Model.js';
+import { getAllCourseByid } from '../models/Curso.Model.js';
 
 import { fileURLToPath } from 'url';
 import fs from 'fs/promises';
 import { dirname } from 'path';
 import path from 'path';
 import { createReadStream } from 'fs';
+import axios from 'axios'
+
 /* import { promisify } from 'util';
 
 const statAsync = promisify(fs.stat);
@@ -92,12 +94,37 @@ const getReadme = async (req, res) => {
     }
 };
 
+
+const isValidObjectId = (value) => {
+    if (typeof value === 'string' && value.length === 24) {
+      return /^[0-9a-fA-F]{24}$/.test(value);
+    }
+    return false;
+  };
+
+
 const getCourse = async (req, res) => {
     try {
-        const data = await getAllCourse(req.params.id);
-        if (!data) throw 'Course not found'
-        res.status(200).json(data)
+        let data = []
+        if (!isValidObjectId(req.params.id)) {
+            try {
+                const response = await axios.get(`http://192.168.128.23:5010/cursos/v2`, {
+                  params: { course: req.params.id }
+                });
+                
+                data = response.data;
+               
+              } catch (error) {
+                console.error('Error al realizar la solicitud HTTP:', error);
+                throw error;
+              }
+        }else{
+
+            data = await getAllCourseByid(req.params.id);
+        }
+        return res.status(200).json(data)
     } catch (error) {
+
         return res.status(404).json(
             {
                 massage: 'Archivo no encontrado'

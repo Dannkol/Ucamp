@@ -65,6 +65,8 @@ use('uCamp_db');
 db.getCollection('users').findOne({})
 
 // Create a new user
+use('uCamp_db');
+
 db.getCollection('users').insertOne(
     {
         "_id": new ObjectId(),
