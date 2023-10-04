@@ -214,7 +214,8 @@ export function IndexPreview(props) {
                 {isMobile && (
                     <Grid position='fixed' style={{
                         margin: '10px',
-                        bottom: 0
+                        bottom: 0,
+                        zIndex: '1000'
                     }}>
                         <Box>
                             <Button disabled={false}

@@ -6,6 +6,8 @@ import animationFloting from './preview.css'
 
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
+import BasicTabs from './tap'; 
+
 import {
     MenuItem,
     FormControl,
@@ -247,6 +249,21 @@ export function PreviewGeneral(props) {
                         </ReactMarkdown>
 
                         /* seccion 5 temas puntuales */
+
+                    )}
+                </Box>
+            </Grid>
+
+            <Grid item align="center" elevation={3} mt={2}>
+                <Box style={{
+                    width : '100%',
+                }}>
+                    {(optionsclasesdefault) && (
+
+                       /*  <iframe class="discord"  sandbox="allow-scripts allow-forms" width="100%" height="500" src="https://discord.com/channels/1101581994355347526/1104192484852121640" /> */
+                        <div>
+                            <BasicTabs></BasicTabs>
+                        </div>
 
                     )}
                 </Box>
