@@ -7,28 +7,25 @@ const findUser = async (user) => {
         const db = getDB("uCamp_db")
         const users = await db.collection('users')
         const query = {
-            $or : [
-                { 
-                    identifier : user.identificador
+            $or: [
+                {
+                    identifier: user.identificador
                 },
                 {
-                    username : user.username
-                },
-                {
-                    email : user.email
+                    username: user.username
                 }
             ]
         }
 
         const result = await users.findOne(query)
 
-        if(result === undefined) throw 'error'
+        if (result === undefined) throw 'error'
 
         return result
 
     } catch (error) {
         throw 'error'
-    }finally{
+    } finally {
         await client.close();
     }
 }
@@ -39,15 +36,15 @@ const NewUser = async (user) => {
         const db = getDB("uCamp_db")
         const users = await db.collection('users')
         const query = {
-            _id : new ObjectId(),
-            identifier : user.identificador,
-            username : user.username,
-            email : user.email,
-            rol : 0,
-            courses : [],
-            learning : {
-                default : [],
-                courses : []
+            _id: new ObjectId(),
+            identifier: user.identificador,
+            username: user.username,
+            email: user.email || 'null',
+            rol: 1,
+            courses: [],
+            learning: {
+                default: [],
+                courses: []
             }
         }
 
@@ -56,11 +53,12 @@ const NewUser = async (user) => {
         return result
 
     } catch (error) {
+
         return
-    }finally{
+    } finally {
         await client.close();
     }
 }
 
 
-export { findUser , NewUser }
+export { findUser, NewUser }

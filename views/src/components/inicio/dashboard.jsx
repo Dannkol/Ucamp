@@ -215,7 +215,8 @@ export default function Dashboard() {
             username: user.username,
             email: user.email,
             rol: user.rol,
-            points: user.points
+            points: user.points,
+            courses : user.courses
         })
     }, [user])
 

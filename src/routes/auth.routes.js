@@ -2,7 +2,7 @@ import { Router } from 'express';
 import passport from 'passport';
 import session from 'express-session';
 
-import { findUser , NewUser } from '../models/UserModel.js';
+import { findUser, NewUser } from '../models/UserModel.js';
 
 import DiscordStrategy from 'passport-discord';
 import dotenv from "dotenv";
@@ -39,9 +39,9 @@ passport.use(new DiscordStrategy({
         guild: profile.guilds.filter((e) => {
             return e.id === '1101581994355347526'
         }),
-        points : 0
+        points: 0
     }
-    
+
     return done(null, profile);
 
 
@@ -66,9 +66,9 @@ Router_Auth.get('/auth/discord/callback',
                     return res.status(500).send('Error de inicio de sesión');
                 }
                 // Redirigir al usuario a la página de éxito
-                const user = await findUser(req.user) 
-    
-                if (!user)  await NewUser(req.user)
+                const user = await findUser(req.user)
+
+                if (!user) await NewUser(req.user)
                 res.redirect('/ok');
             });
         })(req, res, next);
@@ -78,7 +78,7 @@ Router_Auth.get('/auth/discord/callback',
 Router_Auth.get('/logout', (req, res) => {
     req.logout; // Passport.js proporciona el método logout() para cerrar la sesión del usuario
     req.session.destroy();
-    res.status(403).json({message : true});
+    res.status(403).json({ message: true });
 });
 
 

@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 
-import { TextField, ThemeProvider, Accordion, AccordionDetails, AccordionSummary, Box, Card, CardContent, Container, Typography, Avatar, Paper, Grid, Button, createTheme } from '@mui/material';
+import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, TextField, ThemeProvider, Accordion, AccordionDetails, AccordionSummary, Box, Card, CardContent, Container, Typography, Avatar, Paper, Grid, Button, createTheme } from '@mui/material';
 import Stack from '@mui/material/Stack';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 const defaultTheme = createTheme();
 
@@ -44,6 +45,7 @@ function stringAvatar(name) {
     };
 }
 
+const serverBackend = JSON.parse(import.meta.env.VITE_SERVERBACKEND)
 
 const UserProfile = (poprs) => {
 
@@ -51,7 +53,17 @@ const UserProfile = (poprs) => {
 
     const navigate = useNavigate();
 
+    const [openModal, setOpenModal] = useState(false);
 
+    const handleClickOpen = () => {
+        setOpenModal(true);
+    };
+
+    const handleClose = () => {
+        setOpenModal(false);
+    };
+
+    console.log(poprs.user);
     return (
         <ThemeProvider theme={defaultTheme}>
 
@@ -78,17 +90,60 @@ const UserProfile = (poprs) => {
                             <Typography variant="subtitle1">Correo Electrónico: {poprs.user.email}</Typography>
                             <Typography variant="subtitle1">points: {poprs.user.points}</Typography>
                             <Typography variant="subtitle1">{poprs.user.rol === 0 ? 'Creador de cursos' : 'Standar'}</Typography>
-                            {
-                                poprs.user.rol === 0 && (
-                                    <Box xs={12}>
-                                        <Button
-                                            variant="outlined"
-                                            component="span"
-                                            fullWidth
-                                            style={{ color: '#207178', backgroundColor: 'white', fontSize: '18px', marginBottom: '10px' }}
-                                            sx={hoveredButton}
-                                            onClick={() => navigate('/formulario/cursos')}
-                                        > Crear Nuevo Curso </Button>
+
+                            <Dialog
+                                open={openModal}
+                                onClose={handleClose}
+                                aria-labelledby="alert-dialog-title"
+                                aria-describedby="alert-dialog-description"
+                            >
+                                <DialogTitle id="alert-dialog-title">Acepto terminos y condiciones para ser creador de cursos</DialogTitle>
+                                <DialogContent>
+                                    <DialogContentText id="alert-dialog-description">
+                                        Estas aceptando los terminos y condiciones de la comunidad de campuslands, el contenido y demas realcionado a los cursos creados es tu responsabilidad y se encuentra bajo las leyes de campuslands y del gobierno colombiano
+                                    </DialogContentText>
+                                </DialogContent>
+                                <DialogActions>
+                                    <Button onClick={async () => {
+                                        try {
+                                            const uploadrol = await axios.get(`http://${serverBackend.HOSTNAME}:${serverBackend.PORT}/dashboard/update/rol`, { withCredentials: true })
+                                            if( uploadrol.status === 200) {
+                                                navigate('/formulario/cursos')
+                                            } else {
+                                                alert('Error en el servidor recarge la pagina')
+                                            }
+                                        } catch (error) {
+                                            console.log(error);
+                                        }
+
+                                    }} color="primary">
+                                        Aceptar
+                                    </Button>
+                                    <Button onClick={handleClose} color="primary">
+                                        Cerrar
+                                    </Button>
+                                </DialogActions>
+                            </Dialog>
+
+                            <Box xs={12}>
+                                <Button
+                                    variant="outlined"
+                                    component="span"
+                                    fullWidth
+                                    style={{ color: '#207178', backgroundColor: 'white', fontSize: '18px', marginBottom: '10px' }}
+                                    sx={hoveredButton}
+                                    onClick={() => {
+                                        console.log(poprs.user.rol == 0);
+                                        if (poprs.user.rol != 0) {
+                                            handleClickOpen();
+                                        } else {
+                                            navigate('/formulario/cursos')
+                                        }
+                                        ;
+                                    }}
+                                > Crear Nuevo Curso </Button>
+                                {
+                                    (poprs.user.courses.length > 0) && (
                                         <Button
                                             variant="outlined"
                                             component="span"
@@ -97,9 +152,11 @@ const UserProfile = (poprs) => {
                                             sx={hoveredButton}
                                             onClick={() => navigate('/formulario/clases')}
                                         > Crear Nueva Clase </Button>
-                                    </Box>
-                                )
-                            }
+                                    )
+                                }
+
+                            </Box>
+
                         </Grid>
                     </Grid>
                 </Paper>

@@ -1,5 +1,5 @@
 import { ObjectId } from "mongodb";
-import { deletcourses, addmylist, deletMyList, getCoursesName, getClasesName, getAllClasesByIds, getAllCourse, mylist } from "../models/Curso.Model.js";
+import { uploadRol, deletcourses, addmylist, deletMyList, getCoursesName, getClasesName, getAllClasesByIds, getAllCourse, mylist } from "../models/Curso.Model.js";
 
 const getCoursesNameId = async (req, res) => {
   try {
@@ -116,4 +116,19 @@ const deletmycourses = async (req, res) => {
   }
 }
 
-export { deletmycourses, addMyListController, deletMyListController, getmylist, getAllCoursecontent, getCoursesNameId, getClasesNameId, getClasescontent }
+const uprol = async (req, res) => {
+  try {
+    console.log(req.user.identificador);
+    const data = await uploadRol(req.user.identificador)
+    res.status(200).json(data);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      message: 'error al traer el usuario'
+    })
+  } finally {
+    res.end()
+  }
+}
+
+export { uprol, deletmycourses, addMyListController, deletMyListController, getmylist, getAllCoursecontent, getCoursesNameId, getClasesNameId, getClasescontent }

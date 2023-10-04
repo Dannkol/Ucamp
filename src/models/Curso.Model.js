@@ -94,6 +94,31 @@ const getClasesName = async (id) => {
   }
 };
 
+const uploadRol = async (user) => {
+  const client = await mongoConn();
+  try {
+    const db = getDB("uCamp_db");
+    const users = await db.collection("users");
+    
+    const updateDocument = {
+      $set: {
+        rol: 0,
+      },
+    };
+
+    await users.updateOne({ identifier: user }, updateDocument);
+
+    return {
+      message: "Ahora eres un usuario creador de cursos"
+    }
+
+  } catch (error) {
+    return null;
+  } finally {
+    client.close();
+  }
+}
+
 const getAllClasesByIds = async (data) => {
   const client = await mongoConn();
   try {
@@ -392,6 +417,7 @@ const deletcourses = async (id, iduser) => {
 };
 
 export {
+  uploadRol,
   deletcourses,
   addmylist,
   getAllCourse,
