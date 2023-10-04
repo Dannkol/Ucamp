@@ -102,7 +102,7 @@ db.createCollection("users", {
                         default: {
                             bsonType: ["array"],
                             items: {
-                                bsonType: "objectId",
+                                bsonType: "string",
                                 description: "id of the courses default"
                             },
                             description: "List od the courses default"

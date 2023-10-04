@@ -1,0 +1,86 @@
+{
+    "nameCourse": "React: De cero a experto ( Hooks y MERN )",
+    "videos": [
+        {
+            "sectionName": "Sección 1: Introducción",
+            "videos": [
+                {
+                    "Titulo": "Introducción al curso",
+                    "video": "react-1-01-Introducción",
+                    "Texto": "",
+                    "duracion": 105166
+                },
+                {
+                    "Titulo": "¿Cómo funcionará el curso?",
+                    "video": "react-1-02-Como_funcionara_el_curso",
+                    "Texto": "",
+                    "duracion": 211433
+                },
+                {
+                    "Titulo": "¿Cómo hacer preguntas?",
+                    "video": "react-1-03-Como-hacer-preguntas",
+                    "Texto": "",
+                    "duracion": 194366
+                },
+                {
+                    "Titulo": "Instalaciones necesarias y recomendadas",
+                    "video": "react-1-04-Instalaciones_necesarias_y_recomendadas",
+                    "Texto": "",
+                    "duracion": 541966,
+                    "links": [
+                        {
+                            "titulo-link": "Instalaciones necesarias",
+                            "link": "https://gist.github.com/Klerith/4a4abfd88a88b2d1f16efd95fea41362"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "sectionName": "Sección 2: Introducción a React y conceptos generales",
+            "videos": [
+                {
+                    "Titulo": "Introducción a la sección",
+                    "video": "react-2-01-Introducción",
+                    "Texto": "",
+                    "duracion": 541966
+                },
+                {
+                    "Titulo": "Temas puntuales de la sección",
+                    "Texto": "Temas puntuales de la sección\n¿Qué aprenderemos en esta sección?\n\n¿Qué es React?\n\nConceptos generales\n\nBabel\n\nJSX\n\nDaremos nuestros primeros pasos y una pequeña aplicación que nos ayudará a perderle el miedo a React rápidamente",
+                    "duracion": 541966
+                },
+                {
+                    "Titulo": "¿Qué es React?",
+                    "video": "react-2-02-Que_es_React",
+                    "Texto": "Temas puntuales de la sección\n¿Qué aprenderemos en esta sección?\n\n¿Qué es React?\n\nConceptos generales\n\nBabel\n\nJSX\n\nDaremos nuestros primeros pasos y una pequeña aplicación que nos ayudará a perderle el miedo a React rápidamente",
+                    "duracion": 541966
+                },
+                {
+                    "Titulo": "Primeros pasos en React",
+                    "video": "react-2-03-Primeros_pasos_en_React",
+                    "Texto": "Temas puntuales de la sección\n¿Qué aprenderemos en esta sección?\n\n¿Qué es React?\n\nConceptos generales\n\nBabel\n\nJSX\n\nDaremos nuestros primeros pasos y una pequeña aplicación que nos ayudará a perderle el miedo a React rápidamente",
+                    "duracion": 541966,
+                    "links": [
+                        {
+                            "titulo-link": "React-index.html Demo",
+                            "link": "https://gist.github.com/Klerith/b0111f52ba16451d095f38d4c995605b"
+                        }
+                    ]
+                },
+                {
+                    "Titulo": "Introducción a Babel",
+                    "video": "react-2-04-Introduccion_a_Babel",
+                    "Texto": "Temas puntuales de la sección\n¿Qué aprenderemos en esta sección?\n\n¿Qué es React?\n\nConceptos generales\n\nBabel\n\nJSX\n\nDaremos nuestros primeros pasos y una pequeña aplicación que nos ayudará a perderle el miedo a React rápidamente",
+                    "duracion": 541966,
+                    "links": [
+                        {
+                            "titulo-link": "Babeljs.io - Sitio oficial",
+                            "link": "https://babeljs.io/"
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
