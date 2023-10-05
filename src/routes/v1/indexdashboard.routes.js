@@ -10,15 +10,15 @@ import { ensureAuthenticated } from '../../middleware/ensureAuthenticated.middle
 
 const IndexDashboard = Router();
 
-IndexDashboard.get('/dashboard/all/course', getAllCoursecontent)
+IndexDashboard.get('/dashboard/all/course', ensureAuthenticated, getAllCoursecontent)
 
-IndexDashboard.post('/dashboard/mylist', getmylist)
+IndexDashboard.post('/dashboard/mylist', ensureAuthenticated, getmylist)
 
-IndexDashboard.get('/dashboard/info/user', getUser)
+IndexDashboard.get('/dashboard/info/user', ensureAuthenticated, getUser)
 
-IndexDashboard.get('/dashboard/mylist/delate/:idcourse', deletMyListController)
-IndexDashboard.get('/dashboard/mycourses/delate/:idcourse', deletmycourses)
-IndexDashboard.get('/dashboard/update/rol', uprol)
+IndexDashboard.get('/dashboard/mylist/delate/:idcourse', ensureAuthenticated, deletMyListController)
+IndexDashboard.get('/dashboard/mycourses/delate/:idcourse', ensureAuthenticated, deletmycourses)
+IndexDashboard.get('/dashboard/update/rol', ensureAuthenticated, uprol)
 
 
 
